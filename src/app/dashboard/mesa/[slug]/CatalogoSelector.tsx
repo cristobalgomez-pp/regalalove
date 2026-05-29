@@ -102,18 +102,9 @@ export default function CatalogoSelector({
               <div className="muted" style={{ fontSize: "0.9rem", marginBottom: "0.6rem" }}>
                 {pesos(item.precio_centavos)}
               </div>
-              <form action={agregarDesdeCatalogo.bind(null, slug, item.id)} style={{ display: "flex", gap: "0.4rem" }}>
-                <input
-                  name="cantidad"
-                  type="number"
-                  min={1}
-                  defaultValue={1}
-                  className="input"
-                  style={{ width: 56, padding: "0.45rem 0.5rem" }}
-                  aria-label="Cantidad"
-                />
-                <button type="submit" className="btn btn-primario" style={{ flex: 1, padding: "0.45rem 0.6rem" }}>
-                  Agregar
+              <form action={agregarDesdeCatalogo.bind(null, slug, item.id)}>
+                <button type="submit" className="btn btn-primario btn-bloque" style={{ padding: "0.45rem 0.6rem" }}>
+                  + Agregar
                 </button>
               </form>
             </div>

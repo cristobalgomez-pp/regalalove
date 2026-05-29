@@ -56,17 +56,32 @@ export async function agregarItem(slug: string, formData: FormData) {
   revalidar(slug);
 }
 
-/** Agrega a la mesa un ítem escogido del catálogo de Regalove, con cantidad.
- * La meta de dinero = precio del catálogo × cantidad. */
-export async function agregarDesdeCatalogo(
-  slug: string,
-  catalogoItemId: string,
-  formData: FormData,
-) {
+/** Agrega un ítem del catálogo a la mesa. Si ya está, incrementa su cantidad
+ * (en vez de duplicar la fila); si no, lo inserta con cantidad 1. La meta de
+ * dinero siempre es precio unitario × cantidad. */
+export async function agregarDesdeCatalogo(slug: string, catalogoItemId: string) {
   const supabase = await crearClienteServidorAuth();
   const eventoId = await eventoIdPorSlug(supabase, slug);
 
-  const cantidad = Math.max(1, Math.round(Number(formData.get("cantidad") ?? 1)));
+  const { data: existentes } = await supabase
+    .from("items_mesa")
+    .select("id, cantidad, monto_meta_centavos")
+    .eq("evento_id", eventoId)
+    .eq("catalogo_item_id", catalogoItemId)
+    .limit(1);
+  const existente = existentes?.[0];
+
+  if (existente) {
+    const unitario = Math.round(existente.monto_meta_centavos / existente.cantidad);
+    const cantidad = existente.cantidad + 1;
+    const { error } = await supabase
+      .from("items_mesa")
+      .update({ cantidad, monto_meta_centavos: unitario * cantidad })
+      .eq("id", existente.id);
+    if (error) throw new Error(`No se pudo actualizar el ítem: ${error.message}`);
+    revalidar(slug);
+    return;
+  }
 
   const { data: catItem } = await supabase
     .from("catalogo_items")
@@ -76,18 +91,40 @@ export async function agregarDesdeCatalogo(
   if (!catItem) throw new Error("Ítem de catálogo no encontrado");
 
   const orden = await siguienteOrden(supabase, eventoId);
-
   const { error } = await supabase.from("items_mesa").insert({
     evento_id: eventoId,
     catalogo_item_id: catalogoItemId,
     nombre: catItem.nombre,
     descripcion: catItem.descripcion,
     imagen_url: catItem.imagen_url,
-    monto_meta_centavos: catItem.precio_centavos * cantidad,
-    cantidad,
+    monto_meta_centavos: catItem.precio_centavos,
+    cantidad: 1,
     orden,
   });
   if (error) throw new Error(`No se pudo agregar el ítem: ${error.message}`);
+
+  revalidar(slug);
+}
+
+/** Sube o baja la cantidad de un ítem ya agregado (mínimo 1), recalculando
+ * la meta de dinero a partir del precio unitario. */
+export async function ajustarCantidad(itemId: string, slug: string, delta: number) {
+  const supabase = await crearClienteServidorAuth();
+
+  const { data: item } = await supabase
+    .from("items_mesa")
+    .select("cantidad, monto_meta_centavos")
+    .eq("id", itemId)
+    .maybeSingle();
+  if (!item) return;
+
+  const unitario = Math.round(item.monto_meta_centavos / item.cantidad);
+  const cantidad = Math.max(1, item.cantidad + delta);
+  const { error } = await supabase
+    .from("items_mesa")
+    .update({ cantidad, monto_meta_centavos: unitario * cantidad })
+    .eq("id", itemId);
+  if (error) throw new Error(`No se pudo ajustar la cantidad: ${error.message}`);
 
   revalidar(slug);
 }
