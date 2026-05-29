@@ -37,5 +37,7 @@ export async function crearEvento(formData: FormData) {
     throw new Error(`No se pudo crear la mesa: ${error.message}`);
   }
 
-  redirect(`/${slug}`);
+  // Recién creada la mesa, llevamos al festejado a gestionarla (agregar
+  // regalos) en vez de a su página pública todavía vacía.
+  redirect(`/dashboard/mesa/${slug}`);
 }
