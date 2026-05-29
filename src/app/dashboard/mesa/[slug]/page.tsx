@@ -1,7 +1,8 @@
 import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
 import { crearClienteServidorAuth } from "@/lib/supabase/servidor-auth";
-import { agregarItem, eliminarItem, moverItem } from "./acciones";
+import { agregarItem, eliminarItem, ajustarCantidad } from "./acciones";
+import CatalogoSelector from "./CatalogoSelector";
 
 function pesos(centavos: number): string {
   return (centavos / 100).toLocaleString("es-MX", { style: "currency", currency: "MXN" });
@@ -29,59 +30,191 @@ export default async function GestionMesa({
   if (!evento) notFound();
   if (evento.festejado_id !== user.id) redirect("/dashboard"); // no es tu mesa
 
-  const { data: items } = await supabase
-    .from("items_mesa")
-    .select("id, nombre, descripcion, monto_meta_centavos, orden")
-    .eq("evento_id", evento.id)
-    .order("orden", { ascending: true });
+  const [{ data: items }, { data: catalogo }] = await Promise.all([
+    supabase
+      .from("items_mesa")
+      .select("id, nombre, monto_meta_centavos, cantidad, orden")
+      .eq("evento_id", evento.id)
+      .order("orden", { ascending: true }),
+    supabase
+      .from("catalogo_items")
+      .select("id, nombre, categoria, descripcion, precio_centavos, imagen_url")
+      .order("categoria", { ascending: true }),
+  ]);
 
   const lista = items ?? [];
+  const total = lista.reduce((s, it) => s + it.monto_meta_centavos, 0);
 
   return (
-    <main style={{ maxWidth: 640, margin: "3rem auto", padding: "0 1rem", fontFamily: "system-ui, sans-serif" }}>
-      <p><Link href="/dashboard">← Volver al panel</Link></p>
-      <h1>Lista de deseos · {evento.titulo}</h1>
-      <p><Link href={`/${slug}`}>Ver página pública →</Link></p>
+    <main className="contenedor" style={{ paddingTop: "2rem", paddingBottom: "4rem", maxWidth: 1100 }}>
+      <Link href="/dashboard" className="muted" style={{ fontSize: "0.9rem", textDecoration: "none" }}>
+        ← Volver al panel
+      </Link>
 
-      <section style={{ marginTop: "1.5rem" }}>
-        <h2>Agregar ítem</h2>
-        <form action={agregarItem.bind(null, slug)} style={{ display: "flex", flexDirection: "column", gap: "0.5rem", maxWidth: 380 }}>
-          <input name="nombre" placeholder="Nombre (ej. Vajilla)" required />
-          <input name="descripcion" placeholder="Descripción (opcional)" />
-          <input name="imagen_url" placeholder="URL de imagen (opcional)" />
-          <input name="monto_meta" type="number" step="0.01" min="0.01" placeholder="Precio meta (MXN, ej. 3500)" required />
-          <button type="submit">Agregar</button>
-        </form>
-      </section>
+      <header
+        style={{
+          marginTop: "0.75rem",
+          marginBottom: "1.5rem",
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          gap: "1rem",
+          flexWrap: "wrap",
+        }}
+      >
+        <div>
+          <h1 style={{ fontSize: "1.8rem" }}>Arma tu mesa</h1>
+          <p className="muted" style={{ marginTop: "0.25rem" }}>{evento.titulo}</p>
+        </div>
+        <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
+          <Link href={`/dashboard/mesa/${slug}/resumen`} className="btn btn-contorno">
+            Resumen
+          </Link>
+          <Link href={`/${slug}`} target="_blank" rel="noopener" className="btn btn-contorno">
+            👁 Ver como invitado
+          </Link>
+        </div>
+      </header>
 
-      <section style={{ marginTop: "2rem" }}>
-        <h2>Ítems ({lista.length})</h2>
-        {lista.length === 0 ? (
-          <p style={{ color: "#666" }}>Aún no hay ítems. Agrega el primero arriba.</p>
-        ) : (
-          <ul style={{ listStyle: "none", padding: 0, display: "flex", flexDirection: "column", gap: "0.5rem" }}>
-            {lista.map((it, idx) => (
-              <li key={it.id} style={{ border: "1px solid #eee", borderRadius: 8, padding: "0.75rem", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                <span>
-                  <strong>{it.nombre}</strong> — {pesos(it.monto_meta_centavos)}
-                  {it.descripcion ? <span style={{ color: "#888" }}> · {it.descripcion}</span> : null}
-                </span>
-                <span style={{ display: "flex", gap: "0.25rem" }}>
-                  <form action={moverItem.bind(null, it.id, slug, "subir")}>
-                    <button type="submit" disabled={idx === 0}>↑</button>
-                  </form>
-                  <form action={moverItem.bind(null, it.id, slug, "bajar")}>
-                    <button type="submit" disabled={idx === lista.length - 1}>↓</button>
-                  </form>
-                  <form action={eliminarItem.bind(null, it.id, slug)}>
-                    <button type="submit">Eliminar</button>
-                  </form>
-                </span>
-              </li>
-            ))}
-          </ul>
-        )}
-      </section>
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "1fr minmax(280px, 340px)",
+          gap: "1.75rem",
+          alignItems: "start",
+        }}
+      >
+        {/* IZQUIERDA: catálogo + ítem propio */}
+        <div>
+          <h2 style={{ fontSize: "1.2rem", marginBottom: "0.25rem" }}>Catálogo de regalos</h2>
+          <p className="muted" style={{ marginTop: 0, marginBottom: "1rem" }}>
+            Escoge lo que de verdad querrías. Cada regalo representa el dinero a juntar.
+          </p>
+          <CatalogoSelector slug={slug} catalogo={catalogo ?? []} />
+
+          <details style={{ marginTop: "2rem" }}>
+            <summary style={{ cursor: "pointer", fontWeight: 600 }}>
+              ¿No lo encuentras? Crea un ítem propio
+            </summary>
+            <div className="tarjeta" style={{ maxWidth: 420, marginTop: "1rem" }}>
+              <form action={agregarItem.bind(null, slug)} className="pila">
+                <div className="campo">
+                  <label htmlFor="nombre">Nombre</label>
+                  <input id="nombre" name="nombre" className="input" placeholder="ej. Bicicleta" required />
+                </div>
+                <div className="campo">
+                  <label htmlFor="descripcion">Descripción (opcional)</label>
+                  <input id="descripcion" name="descripcion" className="input" placeholder="Detalles" />
+                </div>
+                <div className="campo">
+                  <label htmlFor="imagen_url">URL de imagen (opcional)</label>
+                  <input id="imagen_url" name="imagen_url" className="input" placeholder="https://…" />
+                </div>
+                <div style={{ display: "flex", gap: "0.75rem" }}>
+                  <div className="campo" style={{ flex: 1 }}>
+                    <label htmlFor="monto_meta">Precio unitario (MXN)</label>
+                    <input id="monto_meta" name="monto_meta" className="input" type="number" step="0.01" min="0.01" placeholder="ej. 3500" required />
+                  </div>
+                  <div className="campo" style={{ width: 90 }}>
+                    <label htmlFor="cantidad">Cantidad</label>
+                    <input id="cantidad" name="cantidad" className="input" type="number" min={1} defaultValue={1} />
+                  </div>
+                </div>
+                <button type="submit" className="btn btn-primario btn-bloque">
+                  Agregar ítem propio
+                </button>
+              </form>
+            </div>
+          </details>
+        </div>
+
+        {/* DERECHA: tu mesa (sticky) */}
+        <aside style={{ position: "sticky", top: "1.5rem" }}>
+          <div className="tarjeta">
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
+              <h2 style={{ fontSize: "1.15rem" }}>En tu mesa</h2>
+              <span className="muted" style={{ fontSize: "0.85rem" }}>{lista.length} regalos</span>
+            </div>
+
+            {lista.length === 0 ? (
+              <p className="muted" style={{ marginTop: "1rem", marginBottom: 0 }}>
+                Aún no agregas nada. Usa el catálogo de la izquierda. 👈
+              </p>
+            ) : (
+              <>
+                <div
+                  className="pila"
+                  style={{
+                    marginTop: "1rem",
+                    gap: "0.6rem",
+                    maxHeight: "30rem",
+                    overflowY: "auto",
+                    paddingRight: "0.25rem",
+                  }}
+                >
+                  {lista.map((it) => (
+                    <div
+                      key={it.id}
+                      style={{
+                        border: "1px solid var(--border)",
+                        borderRadius: "var(--radius-sm)",
+                        padding: "0.65rem 0.75rem",
+                      }}
+                    >
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "start", gap: "0.5rem" }}>
+                        <strong style={{ fontSize: "0.95rem" }}>{it.nombre}</strong>
+                        <form action={eliminarItem.bind(null, it.id, slug)}>
+                          <button type="submit" className="btn btn-fantasma" style={{ padding: "0.1rem 0.4rem" }} title="Quitar">
+                            ✕
+                          </button>
+                        </form>
+                      </div>
+                      <div className="muted" style={{ fontSize: "0.85rem", margin: "0.2rem 0 0.5rem" }}>
+                        {pesos(it.monto_meta_centavos)}
+                      </div>
+                      <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                        <form action={ajustarCantidad.bind(null, it.id, slug, -1)}>
+                          <button type="submit" className="btn btn-contorno" style={{ padding: "0.2rem 0.6rem" }} title="Menos">
+                            −
+                          </button>
+                        </form>
+                        <span style={{ minWidth: 24, textAlign: "center", fontWeight: 600 }}>{it.cantidad}</span>
+                        <form action={ajustarCantidad.bind(null, it.id, slug, 1)}>
+                          <button type="submit" className="btn btn-contorno" style={{ padding: "0.2rem 0.6rem" }} title="Más">
+                            +
+                          </button>
+                        </form>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    marginTop: "1rem",
+                    paddingTop: "0.75rem",
+                    borderTop: "1px solid var(--border)",
+                    fontWeight: 700,
+                  }}
+                >
+                  <span>Total</span>
+                  <span>{pesos(total)}</span>
+                </div>
+
+                <Link
+                  href={`/dashboard/mesa/${slug}/resumen`}
+                  className="btn btn-primario btn-bloque"
+                  style={{ marginTop: "1rem" }}
+                >
+                  Continuar →
+                </Link>
+              </>
+            )}
+          </div>
+        </aside>
+      </div>
     </main>
   );
 }

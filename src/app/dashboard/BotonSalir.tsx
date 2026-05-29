@@ -13,5 +13,9 @@ export default function BotonSalir() {
     router.refresh();
   }
 
-  return <button onClick={salir}>Cerrar sesión</button>;
+  return (
+    <button onClick={salir} className="btn btn-contorno">
+      Cerrar sesión
+    </button>
+  );
 }
