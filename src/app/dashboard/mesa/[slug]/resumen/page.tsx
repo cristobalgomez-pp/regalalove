@@ -1,7 +1,7 @@
 import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
 import { crearClienteServidorAuth } from "@/lib/supabase/servidor-auth";
-import CompartirMesa from "./CompartirMesa";
+import CompartirMesa from "../../../CompartirMesa";
 
 const ETIQUETA_TIPO: Record<string, string> = {
   boda: "Boda",

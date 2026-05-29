@@ -66,9 +66,14 @@ export default async function GestionMesa({
           <h1 style={{ fontSize: "1.8rem" }}>Arma tu mesa</h1>
           <p className="muted" style={{ marginTop: "0.25rem" }}>{evento.titulo}</p>
         </div>
-        <Link href={`/${slug}`} target="_blank" rel="noopener" className="btn btn-contorno">
-          👁 Ver como invitado
-        </Link>
+        <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
+          <Link href={`/dashboard/mesa/${slug}/resumen`} className="btn btn-contorno">
+            Resumen
+          </Link>
+          <Link href={`/${slug}`} target="_blank" rel="noopener" className="btn btn-contorno">
+            👁 Ver como invitado
+          </Link>
+        </div>
       </header>
 
       <div

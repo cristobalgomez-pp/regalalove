@@ -3,6 +3,7 @@ import Link from "next/link";
 import { crearClienteServidorAuth } from "@/lib/supabase/servidor-auth";
 import { crearEvento } from "./acciones";
 import BotonSalir from "./BotonSalir";
+import BotonCompartir from "./BotonCompartir";
 
 const ETIQUETA_TIPO: Record<string, string> = {
   boda: "Boda",
@@ -95,10 +96,11 @@ export default async function Dashboard() {
                       {ETIQUETA_TIPO[e.tipo] ?? e.tipo}
                     </div>
                   </div>
-                  <div style={{ display: "flex", gap: "0.5rem", flexShrink: 0 }}>
+                  <div style={{ display: "flex", gap: "0.5rem", flexShrink: 0, flexWrap: "wrap" }}>
                     <Link href={`/dashboard/mesa/${e.slug}`} className="btn btn-contorno">
                       Gestionar
                     </Link>
+                    <BotonCompartir slug={e.slug} titulo={e.titulo} />
                     <Link href={`/${e.slug}`} className="btn btn-fantasma">
                       Ver pública
                     </Link>
