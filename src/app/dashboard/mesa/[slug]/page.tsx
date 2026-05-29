@@ -67,6 +67,9 @@ export default async function GestionMesa({
           <p className="muted" style={{ marginTop: "0.25rem" }}>{evento.titulo}</p>
         </div>
         <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
+          <Link href={`/dashboard/mesa/${slug}/personalizar`} className="btn btn-contorno">
+            Personalizar
+          </Link>
           <Link href={`/dashboard/mesa/${slug}/resumen`} className="btn btn-contorno">
             Resumen
           </Link>

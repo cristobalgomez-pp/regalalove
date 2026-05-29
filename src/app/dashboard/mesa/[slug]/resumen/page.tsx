@@ -122,8 +122,11 @@ export default async function ResumenMesa({
       {/* Compartir */}
       <CompartirMesa slug={slug} titulo={evento.titulo} codigo={evento.codigo} />
 
-      <p className="muted centro" style={{ marginTop: "1.5rem", fontSize: "0.85rem" }}>
-        Próximamente: personalizar la página, y los datos para recibir tu dinero.
+      <p className="centro" style={{ marginTop: "1.5rem", fontSize: "0.9rem" }}>
+        <Link href={`/dashboard/mesa/${slug}/personalizar`} style={{ color: "var(--accent)" }}>
+          Personalizar tu página
+        </Link>{" "}
+        <span className="muted">· (próximamente: datos para recibir tu dinero)</span>
       </p>
     </main>
   );
