@@ -1,4 +1,6 @@
-export type MetodoPago = "tarjeta" | "spei" | "oxxo" | "codi";
+import type { MetodoPago } from "../dominio/tipos.js";
+
+export type { MetodoPago };
 
 export interface Aportacion {
   destino: string; // id de ítem o "general"
