@@ -51,14 +51,24 @@ export default async function GestionMesa({
         ← Volver al panel
       </Link>
 
-      <header style={{ marginTop: "0.75rem", marginBottom: "1.5rem" }}>
-        <h1 style={{ fontSize: "1.8rem" }}>Arma tu mesa</h1>
-        <p className="muted" style={{ marginTop: "0.25rem" }}>
-          {evento.titulo} ·{" "}
-          <Link href={`/${slug}`} style={{ color: "var(--accent)" }}>
-            Ver página pública →
-          </Link>
-        </p>
+      <header
+        style={{
+          marginTop: "0.75rem",
+          marginBottom: "1.5rem",
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          gap: "1rem",
+          flexWrap: "wrap",
+        }}
+      >
+        <div>
+          <h1 style={{ fontSize: "1.8rem" }}>Arma tu mesa</h1>
+          <p className="muted" style={{ marginTop: "0.25rem" }}>{evento.titulo}</p>
+        </div>
+        <Link href={`/${slug}`} target="_blank" rel="noopener" className="btn btn-contorno">
+          👁 Ver como invitado
+        </Link>
       </header>
 
       <div
@@ -178,6 +188,16 @@ export default async function GestionMesa({
                   <span>Total</span>
                   <span>{pesos(total)}</span>
                 </div>
+
+                <Link
+                  href={`/${slug}`}
+                  target="_blank"
+                  rel="noopener"
+                  className="btn btn-primario btn-bloque"
+                  style={{ marginTop: "1rem" }}
+                >
+                  👁 Ver mi mesa como invitado
+                </Link>
               </>
             )}
           </div>
