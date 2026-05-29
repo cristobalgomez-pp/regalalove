@@ -137,7 +137,16 @@ export default async function GestionMesa({
               </p>
             ) : (
               <>
-                <div className="pila" style={{ marginTop: "1rem", gap: "0.6rem" }}>
+                <div
+                  className="pila"
+                  style={{
+                    marginTop: "1rem",
+                    gap: "0.6rem",
+                    maxHeight: "30rem",
+                    overflowY: "auto",
+                    paddingRight: "0.25rem",
+                  }}
+                >
                   {lista.map((it) => (
                     <div
                       key={it.id}
