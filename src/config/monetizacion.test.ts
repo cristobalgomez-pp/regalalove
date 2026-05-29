@@ -8,6 +8,15 @@ test("filas vacías devuelven todos los valores por defecto", () => {
   expect(config.comisionPremiumPct).toBe(3);
   expect(config.precioPremium).toBe(49900);
   expect(config.absorcionPreMarcada).toBe(true);
+  expect(config.ventanaRetencionDias).toBe(7);
+});
+
+test("ventana_retencion_dias sobrescribe su default", () => {
+  const config = interpretarConfigMonetizacion([
+    { clave: "ventana_retencion_dias", valor: "14" },
+  ]);
+
+  expect(config.ventanaRetencionDias).toBe(14);
 });
 
 test("una fila comision_base_pct sobrescribe su default", () => {

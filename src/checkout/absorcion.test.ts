@@ -6,6 +6,7 @@ const config = {
   comisionPremiumPct: 3,
   precioPremium: 49900,
   absorcionPreMarcada: true,
+  ventanaRetencionDias: 7,
 };
 
 test("con la casilla marcada el invitado absorbe la comisión y el festejado recibe el 100%", () => {

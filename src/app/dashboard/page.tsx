@@ -100,6 +100,9 @@ export default async function Dashboard() {
                     <Link href={`/dashboard/mesa/${e.slug}`} className="btn btn-contorno">
                       Gestionar
                     </Link>
+                    <Link href={`/dashboard/mesa/${e.slug}/recibido`} className="btn btn-contorno">
+                      Recibido
+                    </Link>
                     <BotonCompartir slug={e.slug} titulo={e.titulo} codigo={e.codigo} />
                     <Link href={`/${e.slug}`} className="btn btn-fantasma">
                       Ver pública
