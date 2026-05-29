@@ -115,10 +115,10 @@ export default function CatalogoSelector({
 
               <form
                 action={agregarDesdeCatalogo.bind(null, slug, item.id)}
-                style={{ flexShrink: 0, display: "flex", flexDirection: "column", gap: "0.4rem", width: 150 }}
+                style={{ flexShrink: 0, display: "flex", alignItems: "center", gap: "0.6rem" }}
               >
                 {/* Precio editable */}
-                <label style={{ display: "flex", alignItems: "center", gap: "0.25rem", fontSize: "0.85rem" }} title="Edita el precio a tu gusto">
+                <label style={{ display: "flex", alignItems: "center", gap: "0.2rem", fontSize: "0.85rem" }} title="Edita el precio a tu gusto">
                   <span className="muted">$</span>
                   <input
                     name="precio"
@@ -128,14 +128,14 @@ export default function CatalogoSelector({
                     value={precioDe(item)}
                     onChange={(e) => setPrecio(item.id, e.target.value)}
                     className="input"
-                    style={{ padding: "0.3rem 0.4rem", textAlign: "right" }}
+                    style={{ width: 80, padding: "0.3rem 0.4rem", textAlign: "right" }}
                     aria-label={`Precio de ${item.nombre}`}
                   />
                   <span className="muted">c/u</span>
                 </label>
 
                 {/* Cantidad */}
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "0.3rem" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "0.25rem" }}>
                   <button type="button" className="btn btn-contorno" style={{ padding: "0.2rem 0.55rem" }} onClick={() => ajustar(item.id, -1)} title="Menos">
                     −
                   </button>
