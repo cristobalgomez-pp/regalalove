@@ -13,6 +13,13 @@ function pesos(centavos: number): string {
   return (centavos / 100).toLocaleString("es-MX", { style: "currency", currency: "MXN" });
 }
 
+function fechaLarga(fecha: string | null): string | null {
+  if (!fecha) return null;
+  const [a, m, d] = fecha.split("-").map(Number);
+  if (!a || !m || !d) return null;
+  return new Date(a, m - 1, d).toLocaleDateString("es-MX", { dateStyle: "long" });
+}
+
 // Montos de dinero rápidos disponibles en toda mesa (en pesos).
 const MONTOS_RAPIDOS = [500, 1000, 1500, 2000, 2500, 5000, 10000];
 
@@ -26,13 +33,15 @@ export default async function PaginaEvento({
   const supabase = await crearClienteServidorAuth();
   const { data: evento } = await supabase
     .from("eventos")
-    .select("id, titulo, tipo")
+    .select("id, titulo, tipo, mensaje_bienvenida, fecha_evento, portada_url")
     .eq("slug", slug)
     .maybeSingle();
 
   if (!evento) {
     notFound();
   }
+
+  const fecha = fechaLarga(evento.fecha_evento);
 
   const [{ data: items }, { data: aportaciones }] = await Promise.all([
     supabase
@@ -61,14 +70,26 @@ export default async function PaginaEvento({
   }
 
   return (
-    <main className="contenedor" style={{ paddingTop: "2.5rem", paddingBottom: "4rem", maxWidth: 680 }}>
+    <main className="contenedor" style={{ paddingTop: evento.portada_url ? "1.5rem" : "2.5rem", paddingBottom: "4rem", maxWidth: 680 }}>
+      {evento.portada_url ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={evento.portada_url}
+          alt={`Portada de ${evento.titulo}`}
+          style={{ width: "100%", height: 240, objectFit: "cover", borderRadius: "var(--radius)", marginBottom: "1.5rem" }}
+        />
+      ) : null}
+
       <header className="centro" style={{ marginBottom: "2.5rem" }}>
         <p style={{ color: "var(--accent)", textTransform: "uppercase", letterSpacing: "0.12em", fontSize: "0.8rem", fontWeight: 700 }}>
           {ETIQUETA_TIPO[evento.tipo] ?? evento.tipo}
+          {fecha ? ` · ${fecha}` : ""}
         </p>
         <h1 style={{ fontSize: "2.75rem", marginTop: "0.5rem" }}>{evento.titulo}</h1>
         <p className="muted" style={{ marginTop: "0.75rem" }}>
-          Elige un regalo de la lista y haz tu aportación.
+          {evento.mensaje_bienvenida
+            ? evento.mensaje_bienvenida
+            : "Elige un regalo de la lista y haz tu aportación."}
         </p>
       </header>
 
