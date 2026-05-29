@@ -11,6 +11,7 @@ export default function Registro() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [cargando, setCargando] = useState(false);
+  const [confirmacionEnviada, setConfirmacionEnviada] = useState(false);
 
   async function manejarSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -18,15 +19,49 @@ export default function Registro() {
     setCargando(true);
 
     const supabase = crearClienteNavegador();
-    const { error } = await supabase.auth.signUp({ email: correo, password });
+    const { data, error } = await supabase.auth.signUp({
+      email: correo,
+      password,
+      options: { emailRedirectTo: `${window.location.origin}/auth/callback` },
+    });
 
     if (error) {
       setError(error.message);
       setCargando(false);
       return;
     }
+
+    // Con confirmación de correo activada, signUp NO devuelve sesión: hay que
+    // verificar el correo antes de entrar.
+    if (!data.session) {
+      setConfirmacionEnviada(true);
+      setCargando(false);
+      return;
+    }
+
     router.push("/dashboard");
     router.refresh();
+  }
+
+  if (confirmacionEnviada) {
+    return (
+      <main className="contenedor" style={{ paddingTop: "4rem", paddingBottom: "4rem" }}>
+        <div className="tarjeta centro" style={{ maxWidth: 420, margin: "0 auto" }}>
+          <div style={{ fontSize: "2.5rem" }}>📩</div>
+          <h1 style={{ fontSize: "1.5rem", marginTop: "0.5rem" }}>Confirma tu correo</h1>
+          <p className="muted" style={{ marginTop: "0.75rem" }}>
+            Te enviamos un enlace a <strong style={{ color: "var(--ink)" }}>{correo}</strong>.
+            Ábrelo para activar tu cuenta y empezar a crear tu mesa.
+          </p>
+          <p className="muted" style={{ marginTop: "1rem", fontSize: "0.85rem" }}>
+            ¿No lo ves? Revisa tu carpeta de spam.
+          </p>
+          <Link href="/login" className="btn btn-contorno btn-bloque" style={{ marginTop: "1.25rem" }}>
+            Ir a iniciar sesión
+          </Link>
+        </div>
+      </main>
+    );
   }
 
   return (
