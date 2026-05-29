@@ -50,7 +50,11 @@ export default async function Dashboard() {
           <ul>
             {eventos.map((e) => (
               <li key={e.slug}>
-                <Link href={`/${e.slug}`}>{e.titulo}</Link> — {e.tipo}
+                <strong>{e.titulo}</strong> — {e.tipo}
+                {" · "}
+                <Link href={`/dashboard/mesa/${e.slug}`}>Gestionar lista</Link>
+                {" · "}
+                <Link href={`/${e.slug}`}>Ver pública</Link>
               </li>
             ))}
           </ul>
