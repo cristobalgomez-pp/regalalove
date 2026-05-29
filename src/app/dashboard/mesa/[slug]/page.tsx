@@ -190,13 +190,11 @@ export default async function GestionMesa({
                 </div>
 
                 <Link
-                  href={`/${slug}`}
-                  target="_blank"
-                  rel="noopener"
+                  href={`/dashboard/mesa/${slug}/resumen`}
                   className="btn btn-primario btn-bloque"
                   style={{ marginTop: "1rem" }}
                 >
-                  👁 Ver mi mesa como invitado
+                  Continuar →
                 </Link>
               </>
             )}
