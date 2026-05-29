@@ -12,10 +12,6 @@ export interface CatalogoItem {
   imagen_url: string | null;
 }
 
-function pesos(centavos: number): string {
-  return (centavos / 100).toLocaleString("es-MX", { style: "currency", currency: "MXN" });
-}
-
 export default function CatalogoSelector({
   slug,
   catalogo,
@@ -26,6 +22,7 @@ export default function CatalogoSelector({
   const [busqueda, setBusqueda] = useState("");
   const [categoria, setCategoria] = useState<string>("Todas");
   const [cantidades, setCantidades] = useState<Record<string, number>>({});
+  const [precios, setPrecios] = useState<Record<string, string>>({});
 
   const categorias = useMemo(
     () => ["Todas", ...Array.from(new Set(catalogo.map((c) => c.categoria)))],
@@ -47,6 +44,12 @@ export default function CatalogoSelector({
   const cantidadDe = (id: string) => cantidades[id] ?? 1;
   const ajustar = (id: string, delta: number) =>
     setCantidades((prev) => ({ ...prev, [id]: Math.max(1, (prev[id] ?? 1) + delta) }));
+
+  // Precio editable (en pesos), arranca con el del catálogo.
+  const precioDe = (item: CatalogoItem) =>
+    precios[item.id] ?? String(item.precio_centavos / 100);
+  const setPrecio = (id: string, valor: string) =>
+    setPrecios((prev) => ({ ...prev, [id]: valor }));
 
   return (
     <div>
@@ -108,22 +111,40 @@ export default function CatalogoSelector({
                     {item.descripcion}
                   </p>
                 ) : null}
-                <div className="muted" style={{ fontSize: "0.85rem", marginTop: "0.15rem" }}>
-                  {pesos(item.precio_centavos)} c/u
+              </div>
+
+              <form
+                action={agregarDesdeCatalogo.bind(null, slug, item.id)}
+                style={{ flexShrink: 0, display: "flex", flexDirection: "column", gap: "0.4rem", width: 150 }}
+              >
+                {/* Precio editable */}
+                <label style={{ display: "flex", alignItems: "center", gap: "0.25rem", fontSize: "0.85rem" }} title="Edita el precio a tu gusto">
+                  <span className="muted">$</span>
+                  <input
+                    name="precio"
+                    type="number"
+                    min={1}
+                    step="0.01"
+                    value={precioDe(item)}
+                    onChange={(e) => setPrecio(item.id, e.target.value)}
+                    className="input"
+                    style={{ padding: "0.3rem 0.4rem", textAlign: "right" }}
+                    aria-label={`Precio de ${item.nombre}`}
+                  />
+                  <span className="muted">c/u</span>
+                </label>
+
+                {/* Cantidad */}
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "0.3rem" }}>
+                  <button type="button" className="btn btn-contorno" style={{ padding: "0.2rem 0.55rem" }} onClick={() => ajustar(item.id, -1)} title="Menos">
+                    −
+                  </button>
+                  <span style={{ minWidth: 22, textAlign: "center", fontWeight: 600 }}>{cantidadDe(item.id)}</span>
+                  <button type="button" className="btn btn-contorno" style={{ padding: "0.2rem 0.55rem" }} onClick={() => ajustar(item.id, 1)} title="Más">
+                    +
+                  </button>
                 </div>
-              </div>
 
-              <div style={{ display: "flex", alignItems: "center", gap: "0.3rem", flexShrink: 0 }}>
-                <button type="button" className="btn btn-contorno" style={{ padding: "0.2rem 0.55rem" }} onClick={() => ajustar(item.id, -1)} title="Menos">
-                  −
-                </button>
-                <span style={{ minWidth: 22, textAlign: "center", fontWeight: 600 }}>{cantidadDe(item.id)}</span>
-                <button type="button" className="btn btn-contorno" style={{ padding: "0.2rem 0.55rem" }} onClick={() => ajustar(item.id, 1)} title="Más">
-                  +
-                </button>
-              </div>
-
-              <form action={agregarDesdeCatalogo.bind(null, slug, item.id)} style={{ flexShrink: 0 }}>
                 <input type="hidden" name="cantidad" value={cantidadDe(item.id)} />
                 <button type="submit" className="btn btn-primario" style={{ padding: "0.45rem 0.9rem" }}>
                   Agregar

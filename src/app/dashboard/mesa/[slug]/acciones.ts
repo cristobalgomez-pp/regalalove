@@ -68,6 +68,11 @@ export async function agregarDesdeCatalogo(
   const eventoId = await eventoIdPorSlug(supabase, slug);
 
   const aAgregar = Math.max(1, Math.round(Number(formData.get("cantidad") ?? 1)));
+  // Precio editado por el festejado (en pesos). Si no es válido, caemos al
+  // precio del catálogo.
+  const precioPesos = Number(formData.get("precio"));
+  const precioEditado =
+    Number.isFinite(precioPesos) && precioPesos > 0 ? Math.round(precioPesos * 100) : null;
 
   const { data: existentes } = await supabase
     .from("items_mesa")
@@ -78,7 +83,8 @@ export async function agregarDesdeCatalogo(
   const existente = existentes?.[0];
 
   if (existente) {
-    const unitario = Math.round(existente.monto_meta_centavos / existente.cantidad);
+    // Agregar de nuevo: el precio editado manda para toda la línea; suma cantidad.
+    const unitario = precioEditado ?? Math.round(existente.monto_meta_centavos / existente.cantidad);
     const cantidad = existente.cantidad + aAgregar;
     const { error } = await supabase
       .from("items_mesa")
@@ -96,6 +102,7 @@ export async function agregarDesdeCatalogo(
     .maybeSingle();
   if (!catItem) throw new Error("Ítem de catálogo no encontrado");
 
+  const unitario = precioEditado ?? catItem.precio_centavos;
   const orden = await siguienteOrden(supabase, eventoId);
   const { error } = await supabase.from("items_mesa").insert({
     evento_id: eventoId,
@@ -103,7 +110,7 @@ export async function agregarDesdeCatalogo(
     nombre: catItem.nombre,
     descripcion: catItem.descripcion,
     imagen_url: catItem.imagen_url,
-    monto_meta_centavos: catItem.precio_centavos * aAgregar,
+    monto_meta_centavos: unitario * aAgregar,
     cantidad: aAgregar,
     orden,
   });
