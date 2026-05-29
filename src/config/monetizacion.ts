@@ -3,6 +3,7 @@ export interface ConfigMonetizacion {
   comisionPremiumPct: number;
   precioPremium: number; // en centavos
   absorcionPreMarcada: boolean;
+  ventanaRetencionDias: number; // días que el dinero por tarjeta queda retenido
 }
 
 export interface FilaConfig {
@@ -15,6 +16,7 @@ const DEFAULTS: ConfigMonetizacion = {
   comisionPremiumPct: 3,
   precioPremium: 49900,
   absorcionPreMarcada: true,
+  ventanaRetencionDias: 7,
 };
 
 function parsearNumero(clave: string, valor: string): number {
@@ -46,6 +48,12 @@ export function interpretarConfigMonetizacion(filas: FilaConfig[]): ConfigMoneti
   }
   if (mapa.has("absorcion_pre_marcada")) {
     config.absorcionPreMarcada = mapa.get("absorcion_pre_marcada") === "true";
+  }
+  if (mapa.has("ventana_retencion_dias")) {
+    config.ventanaRetencionDias = parsearNumero(
+      "ventana_retencion_dias",
+      mapa.get("ventana_retencion_dias")!,
+    );
   }
 
   return config;
