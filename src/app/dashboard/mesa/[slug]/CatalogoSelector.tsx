@@ -25,6 +25,7 @@ export default function CatalogoSelector({
 }) {
   const [busqueda, setBusqueda] = useState("");
   const [categoria, setCategoria] = useState<string>("Todas");
+  const [cantidades, setCantidades] = useState<Record<string, number>>({});
 
   const categorias = useMemo(
     () => ["Todas", ...Array.from(new Set(catalogo.map((c) => c.categoria)))],
@@ -42,6 +43,10 @@ export default function CatalogoSelector({
       return coincideCat && coincideBusqueda;
     });
   }, [catalogo, busqueda, categoria]);
+
+  const cantidadDe = (id: string) => cantidades[id] ?? 1;
+  const ajustar = (id: string, delta: number) =>
+    setCantidades((prev) => ({ ...prev, [id]: Math.max(1, (prev[id] ?? 1) + delta) }));
 
   return (
     <div>
@@ -70,41 +75,58 @@ export default function CatalogoSelector({
       {filtrado.length === 0 ? (
         <p className="muted">No hay regalos que coincidan con tu búsqueda.</p>
       ) : (
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))",
-            gap: "1rem",
-          }}
-        >
+        <div className="pila" style={{ gap: "0.6rem" }}>
           {filtrado.map((item) => (
-            <div key={item.id} className="tarjeta" style={{ padding: "0.75rem" }}>
+            <div
+              key={item.id}
+              className="tarjeta"
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "1rem",
+                padding: "0.6rem 0.85rem",
+              }}
+            >
               {item.imagen_url ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
                   src={item.imagen_url}
                   alt={item.nombre}
-                  style={{
-                    width: "100%",
-                    height: 120,
-                    objectFit: "cover",
-                    borderRadius: 8,
-                    marginBottom: "0.6rem",
-                  }}
+                  style={{ width: 64, height: 64, objectFit: "cover", borderRadius: 8, flexShrink: 0 }}
                 />
-              ) : null}
-              <div style={{ fontSize: "0.72rem", color: "var(--accent)", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.05em" }}>
-                {item.categoria}
+              ) : (
+                <div style={{ width: 64, height: 64, borderRadius: 8, background: "var(--surface)", flexShrink: 0 }} />
+              )}
+
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ fontSize: "0.7rem", color: "var(--accent)", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                  {item.categoria}
+                </div>
+                <strong style={{ fontSize: "0.95rem" }}>{item.nombre}</strong>
+                {item.descripcion ? (
+                  <p className="muted" style={{ margin: "0.1rem 0 0", fontSize: "0.85rem" }}>
+                    {item.descripcion}
+                  </p>
+                ) : null}
+                <div className="muted" style={{ fontSize: "0.85rem", marginTop: "0.15rem" }}>
+                  {pesos(item.precio_centavos)} c/u
+                </div>
               </div>
-              <strong style={{ display: "block", fontSize: "0.95rem", margin: "0.15rem 0" }}>
-                {item.nombre}
-              </strong>
-              <div className="muted" style={{ fontSize: "0.9rem", marginBottom: "0.6rem" }}>
-                {pesos(item.precio_centavos)}
+
+              <div style={{ display: "flex", alignItems: "center", gap: "0.3rem", flexShrink: 0 }}>
+                <button type="button" className="btn btn-contorno" style={{ padding: "0.2rem 0.55rem" }} onClick={() => ajustar(item.id, -1)} title="Menos">
+                  −
+                </button>
+                <span style={{ minWidth: 22, textAlign: "center", fontWeight: 600 }}>{cantidadDe(item.id)}</span>
+                <button type="button" className="btn btn-contorno" style={{ padding: "0.2rem 0.55rem" }} onClick={() => ajustar(item.id, 1)} title="Más">
+                  +
+                </button>
               </div>
-              <form action={agregarDesdeCatalogo.bind(null, slug, item.id)}>
-                <button type="submit" className="btn btn-primario btn-bloque" style={{ padding: "0.45rem 0.6rem" }}>
-                  + Agregar
+
+              <form action={agregarDesdeCatalogo.bind(null, slug, item.id)} style={{ flexShrink: 0 }}>
+                <input type="hidden" name="cantidad" value={cantidadDe(item.id)} />
+                <button type="submit" className="btn btn-primario" style={{ padding: "0.45rem 0.9rem" }}>
+                  Agregar
                 </button>
               </form>
             </div>

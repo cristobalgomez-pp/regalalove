@@ -56,12 +56,18 @@ export async function agregarItem(slug: string, formData: FormData) {
   revalidar(slug);
 }
 
-/** Agrega un ítem del catálogo a la mesa. Si ya está, incrementa su cantidad
- * (en vez de duplicar la fila); si no, lo inserta con cantidad 1. La meta de
+/** Agrega un ítem del catálogo a la mesa con la cantidad indicada. Si ya está,
+ * suma esa cantidad (en vez de duplicar la fila); si no, lo inserta. La meta de
  * dinero siempre es precio unitario × cantidad. */
-export async function agregarDesdeCatalogo(slug: string, catalogoItemId: string) {
+export async function agregarDesdeCatalogo(
+  slug: string,
+  catalogoItemId: string,
+  formData: FormData,
+) {
   const supabase = await crearClienteServidorAuth();
   const eventoId = await eventoIdPorSlug(supabase, slug);
+
+  const aAgregar = Math.max(1, Math.round(Number(formData.get("cantidad") ?? 1)));
 
   const { data: existentes } = await supabase
     .from("items_mesa")
@@ -73,7 +79,7 @@ export async function agregarDesdeCatalogo(slug: string, catalogoItemId: string)
 
   if (existente) {
     const unitario = Math.round(existente.monto_meta_centavos / existente.cantidad);
-    const cantidad = existente.cantidad + 1;
+    const cantidad = existente.cantidad + aAgregar;
     const { error } = await supabase
       .from("items_mesa")
       .update({ cantidad, monto_meta_centavos: unitario * cantidad })
@@ -97,8 +103,8 @@ export async function agregarDesdeCatalogo(slug: string, catalogoItemId: string)
     nombre: catItem.nombre,
     descripcion: catItem.descripcion,
     imagen_url: catItem.imagen_url,
-    monto_meta_centavos: catItem.precio_centavos,
-    cantidad: 1,
+    monto_meta_centavos: catItem.precio_centavos * aAgregar,
+    cantidad: aAgregar,
     orden,
   });
   if (error) throw new Error(`No se pudo agregar el ítem: ${error.message}`);
