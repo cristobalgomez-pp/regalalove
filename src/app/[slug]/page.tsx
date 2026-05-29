@@ -12,6 +12,9 @@ function pesos(centavos: number): string {
   return (centavos / 100).toLocaleString("es-MX", { style: "currency", currency: "MXN" });
 }
 
+// Montos de dinero rápidos disponibles en toda mesa (en pesos).
+const MONTOS_RAPIDOS = [500, 1000, 1500, 2000, 2500, 5000, 10000];
+
 export default async function PaginaEvento({
   params,
 }: {
@@ -32,7 +35,7 @@ export default async function PaginaEvento({
 
   const { data: items } = await supabase
     .from("items_mesa")
-    .select("id, nombre, descripcion, imagen_url, monto_meta_centavos")
+    .select("id, nombre, descripcion, imagen_url, monto_meta_centavos, cantidad")
     .eq("evento_id", evento.id)
     .order("orden", { ascending: true });
 
@@ -57,6 +60,24 @@ export default async function PaginaEvento({
           Elige un regalo de la lista y haz tu aportación.
         </p>
       </header>
+
+      {/* Regalar dinero — montos rápidos disponibles en toda mesa */}
+      <section className="tarjeta" style={{ marginBottom: "2rem" }}>
+        <h2 style={{ fontSize: "1.2rem" }}>Regalar dinero</h2>
+        <p className="muted" style={{ marginTop: "0.35rem", marginBottom: "1rem" }}>
+          ¿Prefieres dar dinero directo? Elige un monto y va al fondo general.
+        </p>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: "0.6rem" }}>
+          {MONTOS_RAPIDOS.map((monto) => (
+            <button key={monto} className="btn btn-contorno" disabled title="Próximamente">
+              ${monto.toLocaleString("es-MX")}
+            </button>
+          ))}
+          <button className="btn btn-fantasma" disabled title="Próximamente">
+            Otro monto
+          </button>
+        </div>
+      </section>
 
       <h2 style={{ fontSize: "1.2rem", marginBottom: "1rem" }}>Lista de deseos</h2>
       {lista.length === 0 ? (
@@ -84,7 +105,10 @@ export default async function PaginaEvento({
                 />
               ) : null}
               <div style={{ flex: 1 }}>
-                <strong style={{ fontSize: "1.05rem" }}>{it.nombre}</strong>
+                <strong style={{ fontSize: "1.05rem" }}>
+                  {it.nombre}
+                  {it.cantidad > 1 ? <span className="muted"> × {it.cantidad}</span> : null}
+                </strong>
                 {it.descripcion ? (
                   <p className="muted" style={{ margin: "0.2rem 0 0.6rem", fontSize: "0.9rem" }}>
                     {it.descripcion}
@@ -111,18 +135,6 @@ export default async function PaginaEvento({
         </div>
       )}
 
-      <div
-        className="tarjeta centro"
-        style={{ marginTop: "1.5rem", borderStyle: "dashed", background: "var(--surface)" }}
-      >
-        <h2 style={{ margin: 0, fontSize: "1.15rem" }}>Fondo general</h2>
-        <p className="muted" style={{ margin: "0.5rem 0 1rem" }}>
-          ¿Prefieres dar libre? Aporta al fondo general sin elegir un ítem.
-        </p>
-        <button className="btn btn-contorno" disabled title="Próximamente">
-          Aportar al fondo
-        </button>
-      </div>
     </main>
   );
 }

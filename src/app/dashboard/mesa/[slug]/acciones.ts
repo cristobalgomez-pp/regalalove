@@ -17,18 +17,7 @@ function revalidar(slug: string) {
   revalidatePath(`/${slug}`);
 }
 
-export async function agregarItem(slug: string, formData: FormData) {
-  const supabase = await crearClienteServidorAuth();
-  const eventoId = await eventoIdPorSlug(supabase, slug);
-
-  const pesos = Number(formData.get("monto_meta") ?? 0);
-  const item = validarItem({
-    nombre: String(formData.get("nombre") ?? ""),
-    descripcion: String(formData.get("descripcion") ?? "") || undefined,
-    montoMetaCentavos: Math.round(pesos * 100),
-  });
-  const imagenUrl = String(formData.get("imagen_url") ?? "").trim() || null;
-
+async function siguienteOrden(supabase: Supabase, eventoId: string): Promise<number> {
   const { data: ultimo } = await supabase
     .from("items_mesa")
     .select("orden")
@@ -36,14 +25,66 @@ export async function agregarItem(slug: string, formData: FormData) {
     .order("orden", { ascending: false })
     .limit(1)
     .maybeSingle();
-  const orden = (ultimo?.orden ?? -1) + 1;
+  return (ultimo?.orden ?? -1) + 1;
+}
+
+export async function agregarItem(slug: string, formData: FormData) {
+  const supabase = await crearClienteServidorAuth();
+  const eventoId = await eventoIdPorSlug(supabase, slug);
+
+  const pesos = Number(formData.get("monto_meta") ?? 0);
+  const cantidad = Math.max(1, Math.round(Number(formData.get("cantidad") ?? 1)));
+  const item = validarItem({
+    nombre: String(formData.get("nombre") ?? ""),
+    descripcion: String(formData.get("descripcion") ?? "") || undefined,
+    montoMetaCentavos: Math.round(pesos * 100),
+  });
+  const imagenUrl = String(formData.get("imagen_url") ?? "").trim() || null;
+  const orden = await siguienteOrden(supabase, eventoId);
 
   const { error } = await supabase.from("items_mesa").insert({
     evento_id: eventoId,
     nombre: item.nombre,
     descripcion: item.descripcion ?? null,
     imagen_url: imagenUrl,
-    monto_meta_centavos: item.montoMetaCentavos,
+    monto_meta_centavos: item.montoMetaCentavos * cantidad,
+    cantidad,
+    orden,
+  });
+  if (error) throw new Error(`No se pudo agregar el ítem: ${error.message}`);
+
+  revalidar(slug);
+}
+
+/** Agrega a la mesa un ítem escogido del catálogo de Regalove, con cantidad.
+ * La meta de dinero = precio del catálogo × cantidad. */
+export async function agregarDesdeCatalogo(
+  slug: string,
+  catalogoItemId: string,
+  formData: FormData,
+) {
+  const supabase = await crearClienteServidorAuth();
+  const eventoId = await eventoIdPorSlug(supabase, slug);
+
+  const cantidad = Math.max(1, Math.round(Number(formData.get("cantidad") ?? 1)));
+
+  const { data: catItem } = await supabase
+    .from("catalogo_items")
+    .select("nombre, descripcion, imagen_url, precio_centavos")
+    .eq("id", catalogoItemId)
+    .maybeSingle();
+  if (!catItem) throw new Error("Ítem de catálogo no encontrado");
+
+  const orden = await siguienteOrden(supabase, eventoId);
+
+  const { error } = await supabase.from("items_mesa").insert({
+    evento_id: eventoId,
+    catalogo_item_id: catalogoItemId,
+    nombre: catItem.nombre,
+    descripcion: catItem.descripcion,
+    imagen_url: catItem.imagen_url,
+    monto_meta_centavos: catItem.precio_centavos * cantidad,
+    cantidad,
     orden,
   });
   if (error) throw new Error(`No se pudo agregar el ítem: ${error.message}`);
