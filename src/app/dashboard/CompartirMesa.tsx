@@ -2,7 +2,15 @@
 
 import { useEffect, useState } from "react";
 
-export default function CompartirMesa({ slug, titulo }: { slug: string; titulo: string }) {
+export default function CompartirMesa({
+  slug,
+  titulo,
+  codigo,
+}: {
+  slug: string;
+  titulo: string;
+  codigo?: string | null;
+}) {
   const [url, setUrl] = useState("");
   const [copiado, setCopiado] = useState(false);
 
@@ -29,6 +37,28 @@ export default function CompartirMesa({ slug, titulo }: { slug: string; titulo: 
       <p className="muted" style={{ marginTop: 0, marginBottom: "1.25rem" }}>
         Manda este enlace a tus invitados para que te regalen.
       </p>
+
+      {codigo ? (
+        <div
+          className="centro"
+          style={{
+            background: "var(--accent-soft)",
+            borderRadius: "var(--radius-sm)",
+            padding: "0.85rem",
+            marginBottom: "1rem",
+          }}
+        >
+          <div className="muted" style={{ fontSize: "0.8rem", fontWeight: 600 }}>
+            Código de tu mesa
+          </div>
+          <div style={{ fontSize: "2rem", fontWeight: 800, letterSpacing: "0.3em", color: "var(--accent-hover)" }}>
+            {codigo}
+          </div>
+          <div className="muted" style={{ fontSize: "0.8rem" }}>
+            En regalove.com → “Regalar a una mesa”
+          </div>
+        </div>
+      ) : null}
 
       <div style={{ display: "flex", gap: "0.5rem", marginBottom: "1rem", flexWrap: "wrap" }}>
         <input className="input" readOnly value={url} style={{ flex: "1 1 240px" }} />

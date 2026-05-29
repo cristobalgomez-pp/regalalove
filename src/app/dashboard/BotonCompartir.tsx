@@ -3,7 +3,15 @@
 import { useState } from "react";
 import CompartirMesa from "./CompartirMesa";
 
-export default function BotonCompartir({ slug, titulo }: { slug: string; titulo: string }) {
+export default function BotonCompartir({
+  slug,
+  titulo,
+  codigo,
+}: {
+  slug: string;
+  titulo: string;
+  codigo?: string | null;
+}) {
   const [abierto, setAbierto] = useState(false);
 
   return (
@@ -27,7 +35,7 @@ export default function BotonCompartir({ slug, titulo }: { slug: string; titulo:
           }}
         >
           <div onClick={(e) => e.stopPropagation()} style={{ width: "100%", maxWidth: 460 }}>
-            <CompartirMesa slug={slug} titulo={titulo} />
+            <CompartirMesa slug={slug} titulo={titulo} codigo={codigo} />
             <button
               type="button"
               className="btn btn-fantasma btn-bloque"

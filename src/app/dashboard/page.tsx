@@ -24,7 +24,7 @@ export default async function Dashboard() {
 
   const { data: eventos } = await supabase
     .from("eventos")
-    .select("titulo, tipo, slug")
+    .select("titulo, tipo, slug, codigo")
     .eq("festejado_id", user.id)
     .order("creado_en", { ascending: false });
 
@@ -100,7 +100,7 @@ export default async function Dashboard() {
                     <Link href={`/dashboard/mesa/${e.slug}`} className="btn btn-contorno">
                       Gestionar
                     </Link>
-                    <BotonCompartir slug={e.slug} titulo={e.titulo} />
+                    <BotonCompartir slug={e.slug} titulo={e.titulo} codigo={e.codigo} />
                     <Link href={`/${e.slug}`} className="btn btn-fantasma">
                       Ver pública
                     </Link>

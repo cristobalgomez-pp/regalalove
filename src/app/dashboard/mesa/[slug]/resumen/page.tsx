@@ -29,7 +29,7 @@ export default async function ResumenMesa({
 
   const { data: evento } = await supabase
     .from("eventos")
-    .select("id, titulo, tipo, festejado_id")
+    .select("id, titulo, tipo, festejado_id, codigo")
     .eq("slug", slug)
     .maybeSingle();
 
@@ -120,7 +120,7 @@ export default async function ResumenMesa({
       </section>
 
       {/* Compartir */}
-      <CompartirMesa slug={slug} titulo={evento.titulo} />
+      <CompartirMesa slug={slug} titulo={evento.titulo} codigo={evento.codigo} />
 
       <p className="muted centro" style={{ marginTop: "1.5rem", fontSize: "0.85rem" }}>
         Próximamente: personalizar la página, y los datos para recibir tu dinero.
