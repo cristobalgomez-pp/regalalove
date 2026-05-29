@@ -30,31 +30,49 @@ export default function Login() {
   }
 
   return (
-    <main style={{ maxWidth: 360, margin: "4rem auto", fontFamily: "system-ui, sans-serif" }}>
-      <h1>Iniciar sesión</h1>
-      <form onSubmit={manejarSubmit} style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
-        <input
-          type="email"
-          placeholder="Correo"
-          value={correo}
-          onChange={(e) => setCorreo(e.target.value)}
-          required
-        />
-        <input
-          type="password"
-          placeholder="Contraseña"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
-        <button type="submit" disabled={cargando}>
-          {cargando ? "Entrando…" : "Entrar"}
-        </button>
-        {error && <p style={{ color: "crimson" }}>{error}</p>}
-      </form>
-      <p style={{ marginTop: "1rem" }}>
-        ¿No tienes cuenta? <Link href="/registro">Crea una</Link>
-      </p>
+    <main className="contenedor" style={{ paddingTop: "4rem", paddingBottom: "4rem" }}>
+      <div className="tarjeta" style={{ maxWidth: 400, margin: "0 auto" }}>
+        <h1 style={{ fontSize: "1.6rem" }}>Iniciar sesión</h1>
+        <p className="muted" style={{ marginTop: "0.4rem", marginBottom: "1.5rem" }}>
+          Entra para gestionar tu mesa de regalos.
+        </p>
+        <form onSubmit={manejarSubmit} className="pila">
+          <div className="campo">
+            <label htmlFor="correo">Correo</label>
+            <input
+              id="correo"
+              className="input"
+              type="email"
+              placeholder="tu@correo.com"
+              value={correo}
+              onChange={(e) => setCorreo(e.target.value)}
+              required
+            />
+          </div>
+          <div className="campo">
+            <label htmlFor="password">Contraseña</label>
+            <input
+              id="password"
+              className="input"
+              type="password"
+              placeholder="Tu contraseña"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+          </div>
+          <button type="submit" className="btn btn-primario btn-bloque" disabled={cargando}>
+            {cargando ? "Entrando…" : "Entrar"}
+          </button>
+          {error && <p className="error">{error}</p>}
+        </form>
+        <p className="muted centro" style={{ marginTop: "1.25rem", fontSize: "0.9rem" }}>
+          ¿No tienes cuenta?{" "}
+          <Link href="/registro" style={{ color: "var(--accent)" }}>
+            Crea una
+          </Link>
+        </p>
+      </div>
     </main>
   );
 }
