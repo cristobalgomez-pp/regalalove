@@ -1,7 +1,8 @@
 export type PlantillaCorreo =
   | "comprobante_invitado"
   | "aviso_aportacion_festejado"
-  | "aviso_retiro_festejado";
+  | "aviso_retiro_festejado"
+  | "bienvenida";
 
 export interface CorreoPendiente {
   destinatario: string;
@@ -60,6 +61,17 @@ export function correoPorRetiro(retiro: DatosRetiro, festejado: Festejado): Corr
     datos: {
       nombreFestejado: festejado.nombre,
       monto: retiro.monto,
+    },
+  };
+}
+
+/** Correo de bienvenida al festejado tras confirmar su cuenta. */
+export function correoBienvenida(festejado: Festejado): CorreoPendiente {
+  return {
+    destinatario: festejado.correo,
+    plantilla: "bienvenida",
+    datos: {
+      nombreFestejado: festejado.nombre,
     },
   };
 }
