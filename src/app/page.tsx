@@ -5,7 +5,7 @@ export default function Home() {
   const { nombreMarca } = obtenerConfigApp();
 
   return (
-    <main className="contenedor" style={{ paddingTop: "5rem", paddingBottom: "5rem" }}>
+    <main className="contenedor" style={{ paddingTop: "clamp(2.5rem, 8vw, 5rem)", paddingBottom: "5rem" }}>
       <div className="centro" style={{ maxWidth: 620, margin: "0 auto" }}>
         <span
           style={{
@@ -20,7 +20,7 @@ export default function Home() {
         >
           Regalos en dinero, sin complicaciones
         </span>
-        <h1 style={{ fontSize: "3.25rem", marginTop: "1.25rem" }}>
+        <h1 style={{ fontSize: "clamp(2rem, 8vw, 3.25rem)", marginTop: "1.25rem" }}>
           Recibe el regalo perfecto: <span style={{ color: "var(--accent)" }}>dinero</span> para
           lo que de verdad quieren.
         </h1>

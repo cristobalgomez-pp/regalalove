@@ -182,3 +182,87 @@ select.input:focus {
 .centro {
   text-align: center;
 }
+
+/* ===== Layouts responsivos ===== */
+.grid-panel {
+  display: grid;
+  grid-template-columns: minmax(280px, 360px) 1fr;
+  gap: 1.5rem;
+  align-items: start;
+}
+.grid-mesa {
+  display: grid;
+  grid-template-columns: 1fr minmax(280px, 340px);
+  gap: 1.75rem;
+  align-items: start;
+}
+.mesa-aside {
+  position: sticky;
+  top: 1.5rem;
+}
+
+/* Filas del catálogo (imagen + info + controles) */
+.fila-catalogo {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.6rem 0.85rem;
+}
+.fila-catalogo-form {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+/* Barra de resumen móvil: oculta en desktop */
+.barra-movil {
+  display: none;
+}
+
+@media (max-width: 640px) {
+  /* Layouts apilan en una columna */
+  .grid-panel,
+  .grid-mesa {
+    grid-template-columns: 1fr;
+  }
+  .mesa-aside {
+    position: static;
+  }
+
+  /* Filas del catálogo se reacomodan vertical */
+  .fila-catalogo {
+    flex-wrap: wrap;
+  }
+  .fila-catalogo-form {
+    flex-basis: 100%;
+    flex-wrap: wrap;
+    justify-content: space-between;
+  }
+
+  /* Tap targets más cómodos */
+  .btn {
+    padding: 0.8rem 1.1rem;
+  }
+
+  /* Barra de resumen fija abajo */
+  .barra-movil {
+    display: flex;
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 50;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.75rem 1.25rem;
+    background: var(--bg);
+    border-top: 1px solid var(--border);
+    box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.06);
+  }
+  /* Padding inferior para que la barra no tape contenido */
+  .con-barra-movil {
+    padding-bottom: 5.5rem;
+  }
+}
