@@ -87,9 +87,11 @@ export async function procesarAportacion(slug: string, formData: FormData) {
         .maybeSingle();
       if (item?.nombre) itemNombre = item.nombre;
     }
+    // `supabase` es el cliente service-role (crearClienteServidor): auth.admin
+    // no funciona con el cliente anon. No cambiar a crearClienteServidorAuth.
     const { data: festejadoUser } = await supabase.auth.admin.getUserById(evento.festejado_id);
     const correoFestejado = festejadoUser?.user?.email;
-    if (correoFestejado) {
+    if (correoFestejado && correo) {
       const correos = correosPorAportacion(
         { invitado: { nombre, correo, mensaje }, monto: montoCentavos, itemNombre },
         { nombre: correoFestejado, correo: correoFestejado },

@@ -84,6 +84,10 @@ export function renderizar(
           cta: { texto: "Crear mi mesa →", url: `${urlBase()}/dashboard` },
         }),
       };
+    default: {
+      const desconocida: never = plantilla;
+      throw new Error(`Plantilla de correo desconocida: ${String(desconocida)}`);
+    }
   }
 }
 

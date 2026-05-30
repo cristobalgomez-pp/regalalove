@@ -6,8 +6,10 @@ import { crearEnviadorResend } from "./resend.js";
 function crearEnviadorNoop(): EnviadorCorreo {
   return {
     async enviar(correo: CorreoPendiente): Promise<void> {
+      // No logueamos el correo completo (privacidad en logs de preview/dev).
+      const dominio = correo.destinatario.split("@")[1] ?? "?";
       console.warn(
-        `[correo omitido] falta RESEND_API_KEY — destino=${correo.destinatario} plantilla=${correo.plantilla}`,
+        `[correo omitido] falta RESEND_API_KEY — destino=***@${dominio} plantilla=${correo.plantilla}`,
       );
     },
   };

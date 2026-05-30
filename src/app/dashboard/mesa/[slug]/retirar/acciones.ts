@@ -48,7 +48,7 @@ export async function solicitarRetiro(slug: string, formData: FormData) {
 
   const { data: kyc } = await supabase
     .from("kyc_festejado")
-    .select("clabe")
+    .select("clabe, nombre_completo")
     .eq("festejado_id", user.id)
     .maybeSingle();
   if (!kyc) throw new Error("Primero completa tus datos para recibir el dinero");
@@ -72,7 +72,10 @@ export async function solicitarRetiro(slug: string, formData: FormData) {
   try {
     if (user.email) {
       await enviarCorreos(obtenerEnviador(), [
-        correoPorRetiro({ monto: montoCentavos }, { nombre: user.email, correo: user.email }),
+        correoPorRetiro(
+          { monto: montoCentavos },
+          { nombre: kyc.nombre_completo ?? user.email, correo: user.email },
+        ),
       ]);
     }
   } catch (e) {
