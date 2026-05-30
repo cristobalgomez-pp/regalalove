@@ -1,7 +1,6 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { crearClienteServidorAuth } from "@/lib/supabase/servidor-auth";
-import { crearEvento } from "./acciones";
 import BotonSalir from "./BotonSalir";
 import BotonCompartir from "./BotonCompartir";
 
@@ -54,25 +53,13 @@ export default async function Dashboard() {
         }}
       >
         <section className="tarjeta">
-          <h2 style={{ fontSize: "1.2rem", marginBottom: "1rem" }}>Crear una mesa</h2>
-          <form action={crearEvento} className="pila">
-            <div className="campo">
-              <label htmlFor="titulo">Título</label>
-              <input id="titulo" name="titulo" className="input" placeholder="ej. Juan y Ana" required />
-            </div>
-            <div className="campo">
-              <label htmlFor="tipo">Tipo de evento</label>
-              <select id="tipo" name="tipo" className="input" defaultValue="boda">
-                <option value="boda">Boda</option>
-                <option value="xv">XV años</option>
-                <option value="baby_shower">Baby shower</option>
-                <option value="cumpleanos">Cumpleaños</option>
-              </select>
-            </div>
-            <button type="submit" className="btn btn-primario btn-bloque">
-              Crear mesa
-            </button>
-          </form>
+          <h2 style={{ fontSize: "1.2rem", marginBottom: "0.5rem" }}>Crear una mesa</h2>
+          <p className="muted" style={{ marginTop: 0, marginBottom: "1.25rem" }}>
+            Empieza con un paquete listo o ármala tú mismo.
+          </p>
+          <Link href="/dashboard/crear" className="btn btn-primario btn-bloque">
+            + Crear mesa
+          </Link>
         </section>
 
         <section>
@@ -85,18 +72,17 @@ export default async function Dashboard() {
                   className="tarjeta"
                   style={{
                     display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
+                    flexDirection: "column",
                     gap: "1rem",
                   }}
                 >
-                  <div>
+                  <div style={{ minWidth: 0 }}>
                     <strong style={{ fontSize: "1.05rem" }}>{e.titulo}</strong>
                     <div className="muted" style={{ fontSize: "0.85rem" }}>
                       {ETIQUETA_TIPO[e.tipo] ?? e.tipo}
                     </div>
                   </div>
-                  <div style={{ display: "flex", gap: "0.5rem", flexShrink: 0, flexWrap: "wrap" }}>
+                  <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
                     <Link href={`/dashboard/mesa/${e.slug}`} className="btn btn-contorno">
                       Gestionar
                     </Link>
