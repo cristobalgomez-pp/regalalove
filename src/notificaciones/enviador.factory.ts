@@ -1,6 +1,6 @@
 import type { CorreoPendiente } from "./correos.js";
 import type { EnviadorCorreo } from "./enviador.js";
-import { crearEnviadorResend } from "./resend.js";
+import { crearEnviadorResend } from "./resend";
 
 /** Enviador no-op: loguea en vez de mandar. Para dev/preview sin credenciales. */
 function crearEnviadorNoop(): EnviadorCorreo {
