@@ -3,6 +3,7 @@ import Link from "next/link";
 import { crearClienteServidorAuth } from "@/lib/supabase/servidor-auth";
 import BotonSalir from "./BotonSalir";
 import BotonCompartir from "./BotonCompartir";
+import BotonEliminarMesa from "./BotonEliminarMesa";
 
 const ETIQUETA_TIPO: Record<string, string> = {
   boda: "Boda",
@@ -23,9 +24,28 @@ export default async function Dashboard() {
 
   const { data: eventos } = await supabase
     .from("eventos")
-    .select("titulo, tipo, slug, codigo")
+    .select("id, titulo, tipo, slug, codigo")
     .eq("festejado_id", user.id)
     .order("creado_en", { ascending: false });
+
+  // Aportaciones confirmadas por mesa, para advertir al eliminar una que ya
+  // recibió dinero.
+  const ids = (eventos ?? []).map((e) => e.id as string);
+  const aportesPorEvento = new Map<string, { count: number; total: number }>();
+  if (ids.length > 0) {
+    const { data: aportes } = await supabase
+      .from("aportaciones")
+      .select("evento_id, monto_centavos")
+      .eq("estado", "confirmada")
+      .in("evento_id", ids);
+    for (const a of aportes ?? []) {
+      const prev = aportesPorEvento.get(a.evento_id as string) ?? { count: 0, total: 0 };
+      aportesPorEvento.set(a.evento_id as string, {
+        count: prev.count + 1,
+        total: prev.total + (a.monto_centavos as number),
+      });
+    }
+  }
 
   return (
     <main className="contenedor" style={{ paddingTop: "2.5rem", paddingBottom: "4rem" }}>
@@ -66,36 +86,46 @@ export default async function Dashboard() {
           <h2 style={{ fontSize: "1.2rem", marginBottom: "1rem" }}>Tus mesas</h2>
           {eventos && eventos.length > 0 ? (
             <div className="pila">
-              {eventos.map((e) => (
-                <div
-                  key={e.slug}
-                  className="tarjeta"
-                  style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: "1rem",
-                  }}
-                >
-                  <div style={{ minWidth: 0 }}>
-                    <strong style={{ fontSize: "1.05rem" }}>{e.titulo}</strong>
-                    <div className="muted" style={{ fontSize: "0.85rem" }}>
-                      {ETIQUETA_TIPO[e.tipo] ?? e.tipo}
+              {eventos.map((e) => {
+                const ap = aportesPorEvento.get(e.id) ?? { count: 0, total: 0 };
+                return (
+                  <div
+                    key={e.slug}
+                    className="tarjeta"
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: "1rem",
+                    }}
+                  >
+                    <div style={{ minWidth: 0 }}>
+                      <strong style={{ fontSize: "1.05rem" }}>{e.titulo}</strong>
+                      <div className="muted" style={{ fontSize: "0.85rem" }}>
+                        {ETIQUETA_TIPO[e.tipo] ?? e.tipo}
+                      </div>
+                    </div>
+                    <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap", alignItems: "center" }}>
+                      <Link href={`/dashboard/mesa/${e.slug}`} className="btn btn-contorno">
+                        Gestionar
+                      </Link>
+                      <Link href={`/dashboard/mesa/${e.slug}/recibido`} className="btn btn-contorno">
+                        Recibido
+                      </Link>
+                      <BotonCompartir slug={e.slug} titulo={e.titulo} codigo={e.codigo} />
+                      <Link href={`/${e.slug}`} className="btn btn-fantasma">
+                        Ver pública
+                      </Link>
+                      <span style={{ flex: 1 }} />
+                      <BotonEliminarMesa
+                        eventoId={e.id}
+                        titulo={e.titulo}
+                        aportaciones={ap.count}
+                        totalCentavos={ap.total}
+                      />
                     </div>
                   </div>
-                  <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
-                    <Link href={`/dashboard/mesa/${e.slug}`} className="btn btn-contorno">
-                      Gestionar
-                    </Link>
-                    <Link href={`/dashboard/mesa/${e.slug}/recibido`} className="btn btn-contorno">
-                      Recibido
-                    </Link>
-                    <BotonCompartir slug={e.slug} titulo={e.titulo} codigo={e.codigo} />
-                    <Link href={`/${e.slug}`} className="btn btn-fantasma">
-                      Ver pública
-                    </Link>
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           ) : (
             <div className="tarjeta centro" style={{ padding: "2.5rem 1.5rem" }}>

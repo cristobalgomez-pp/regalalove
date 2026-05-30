@@ -1,6 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import { revalidatePath } from "next/cache";
 import { crearClienteServidorAuth } from "@/lib/supabase/servidor-auth";
 import { generarSlug } from "@/eventos/slug";
 import { SLUGS_RESERVADOS } from "@/eventos/reservados";
@@ -137,4 +138,21 @@ export async function crearEventoConPaquete(formData: FormData) {
   }
 
   redirect(`/dashboard/mesa/${slug}`);
+}
+
+/**
+ * Elimina una mesa del festejado. Por RLS ("el dueno borra sus eventos") solo
+ * puede borrar las suyas; los regalos, aportaciones y retiros se borran en
+ * cascada. Irreversible. Revalida el panel para que desaparezca de la lista.
+ */
+export async function eliminarEvento(eventoId: string) {
+  const supabase = await crearClienteServidorAuth();
+  await usuarioOLogin(supabase);
+
+  const { error } = await supabase.from("eventos").delete().eq("id", eventoId);
+  if (error) {
+    throw new Error(`No se pudo eliminar la mesa: ${error.message}`);
+  }
+
+  revalidatePath("/dashboard");
 }
