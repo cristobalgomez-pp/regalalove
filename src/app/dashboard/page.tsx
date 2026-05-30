@@ -100,7 +100,7 @@ export default async function Dashboard() {
           ) : (
             <div className="tarjeta centro" style={{ padding: "2.5rem 1.5rem" }}>
               <p className="muted" style={{ margin: 0 }}>
-                Aún no tienes mesas. Crea la primera con el formulario de la izquierda.
+                Aún no tienes mesas. Crea la primera con el botón de la izquierda.
               </p>
             </div>
           )}
