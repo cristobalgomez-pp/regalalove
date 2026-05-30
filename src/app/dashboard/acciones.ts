@@ -101,22 +101,27 @@ export async function crearEventoConPaquete(formData: FormData) {
     .select("cantidad, catalogo_items(id, nombre, descripcion, imagen_url, precio_centavos)")
     .eq("paquete_id", paqueteId);
 
-  const entradas = (paqueteItems ?? []).map((pi) => {
+  const entradas = (paqueteItems ?? []).flatMap((pi) => {
     const c = pi.catalogo_items as unknown as {
       id: string;
       nombre: string;
       descripcion: string | null;
       imagen_url: string | null;
       precio_centavos: number;
-    };
-    return {
-      nombre: c.nombre,
-      descripcion: c.descripcion,
-      imagenUrl: c.imagen_url,
-      precioCentavos: c.precio_centavos,
-      cantidad: pi.cantidad,
-      catalogoItemId: c.id,
-    };
+    } | null;
+    // El FK es not null + on delete cascade, así que c no debería ser null;
+    // la guarda evita crear ítems rotos si la fila quedara huérfana.
+    if (!c) return [];
+    return [
+      {
+        nombre: c.nombre,
+        descripcion: c.descripcion,
+        imagenUrl: c.imagen_url,
+        precioCentavos: c.precio_centavos,
+        cantidad: pi.cantidad,
+        catalogoItemId: c.id,
+      },
+    ];
   });
 
   const filas = armarItemsDesdePaquete(entradas).map((f) => ({

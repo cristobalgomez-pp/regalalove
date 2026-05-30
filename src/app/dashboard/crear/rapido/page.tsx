@@ -14,7 +14,7 @@ function pesos(centavos: number): string {
 
 interface ItemPaquete {
   cantidad: number;
-  catalogo_items: { nombre: string; precio_centavos: number };
+  catalogo_items: { nombre: string; precio_centavos: number } | null;
 }
 interface Paquete {
   id: string;
@@ -80,7 +80,7 @@ export default async function CrearRapido() {
             const items = p.paquete_items ?? [];
             const total = totalPaquete(
               items.map((it) => ({
-                precioCentavos: it.catalogo_items.precio_centavos,
+                precioCentavos: it.catalogo_items?.precio_centavos ?? 0,
                 cantidad: it.cantidad,
               })),
             );
@@ -106,7 +106,7 @@ export default async function CrearRapido() {
                   {preview.map((it, i) => (
                     <li key={i}>
                       {it.cantidad > 1 ? `${it.cantidad}× ` : ""}
-                      {it.catalogo_items.nombre}
+                      {it.catalogo_items?.nombre}
                     </li>
                   ))}
                   {restantes > 0 && <li>+{restantes} más</li>}

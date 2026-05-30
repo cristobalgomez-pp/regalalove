@@ -15,7 +15,9 @@ create table paquete_items (
   id               uuid primary key default gen_random_uuid(),
   paquete_id       uuid not null references paquetes (id) on delete cascade,
   catalogo_item_id uuid not null references catalogo_items (id) on delete cascade,
-  cantidad         integer not null default 1 check (cantidad > 0)
+  cantidad         integer not null default 1 check (cantidad > 0),
+  -- Un mismo regalo no se repite dentro de un paquete (evita doble conteo).
+  unique (paquete_id, catalogo_item_id)
 );
 
 create index paquete_items_paquete_id_idx on paquete_items (paquete_id);
@@ -37,6 +39,10 @@ create policy "lectura publica de paquete_items"
 -- Seed: 8 paquetes en escalera con totales en números cerrados ($50k → $500k).
 -- Cada bloque inserta el paquete y luego sus ítems, haciendo match por nombre
 -- contra catalogo_items (los UUID del catálogo son aleatorios, no se hardcodean).
+-- OJO: si un nombre no coincide con el catálogo, ese ítem se descarta en silencio
+-- (inner join). Tras correr la migración, verifica que los 8 totales sean los
+-- esperados (50k, 100k, 150k, 200k, 250k, 300k, 400k, 500k); un total distinto
+-- significa que algún nombre no hizo match (revisar acentos/escritura).
 -- ----------------------------------------------------------------------------
 
 with p as (
