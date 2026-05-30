@@ -57,12 +57,12 @@ export default function SelectorPaquete({ paquetes }: { paquetes: PaqueteVista[]
       <input
         id="monto"
         type="range"
+        className="slider-monto"
         min={0}
         max={paquetes.length - 1}
         step={1}
         value={idx}
         onChange={(e) => setIdx(Number(e.target.value))}
-        style={{ width: "100%", accentColor: "var(--accent)" }}
         aria-label="Monto a recaudar"
       />
       <div
