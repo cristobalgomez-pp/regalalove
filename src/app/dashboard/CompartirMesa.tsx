@@ -25,7 +25,7 @@ export default function CompartirMesa({
     setTimeout(() => setCopiado(false), 2000);
   }
 
-  const mensaje = `Te invito a mi mesa de regalos "${titulo}" en Regalove 🎁`;
+  const mensaje = `Te invito a mi mesa de regalos "${titulo}" en RegalaLove 🎁`;
   const whatsapp = `https://wa.me/?text=${encodeURIComponent(`${mensaje} ${url}`)}`;
   const qr = url
     ? `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(url)}`
@@ -55,7 +55,7 @@ export default function CompartirMesa({
             {codigo}
           </div>
           <div className="muted" style={{ fontSize: "0.8rem" }}>
-            En regalove.com → “Regalar a una mesa”
+            En regalalove.com → “Regalar a una mesa”
           </div>
         </div>
       ) : null}

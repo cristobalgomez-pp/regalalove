@@ -1,4 +1,4 @@
-# PRD — Regalove (v1 / MVP)
+# PRD — RegalaLove (v1 / MVP)
 
 > Mesa de regalos en efectivo para eventos, con bodas como mercado de lanzamiento. El festejado crea una mesa con lista de deseos; los invitados aportan dinero (entero o fraccionado) sin necesidad de cuenta; todo se convierte en saldo flexible que el festejado retira a su cuenta bancaria. Cobro y dispersión vía EcartPay.
 
@@ -10,9 +10,9 @@ Quien organiza una boda (o cualquier evento) en México quiere recibir apoyo eco
 
 ## Solution
 
-**Regalove**: una plataforma web donde el festejado crea una **mesa de regalos** envuelta en una **página de evento** atractiva (foto, historia, fecha, cuenta regresiva). La mesa es una **lista de deseos protagonista**: ítems con precio (vajilla, refri, "una noche de la luna de miel") que funcionan como ancla emocional y de monto, más un **fondo general** para quien prefiere solo dar dinero. Los invitados aportan **sin crear cuenta** (guest checkout), de forma **completa o fraccionada** (varios pueden completar un mismo ítem, con barra de progreso). Todo el dinero —independientemente del ítem elegido— se convierte en **saldo flexible** que el festejado puede **retirar a su CLABE** en cualquier momento (con una retención parcial corta para amortiguar contracargos), verificando su identidad (KYC) en el primer retiro.
+**RegalaLove**: una plataforma web donde el festejado crea una **mesa de regalos** envuelta en una **página de evento** atractiva (foto, historia, fecha, cuenta regresiva). La mesa es una **lista de deseos protagonista**: ítems con precio (vajilla, refri, "una noche de la luna de miel") que funcionan como ancla emocional y de monto, más un **fondo general** para quien prefiere solo dar dinero. Los invitados aportan **sin crear cuenta** (guest checkout), de forma **completa o fraccionada** (varios pueden completar un mismo ítem, con barra de progreso). Todo el dinero —independientemente del ítem elegido— se convierte en **saldo flexible** que el festejado puede **retirar a su CLABE** en cualquier momento (con una retención parcial corta para amortiguar contracargos), verificando su identidad (KYC) en el primer retiro.
 
-El cobro a invitados y la dispersión al festejado se hacen a través de **EcartPay** (con quien ya existe relación directa), de modo que Regalove **nunca custodia legalmente el dinero** y no requiere licencia IFPE para operar: la experiencia se siente como "tengo un saldo y lo retiro", pero los fondos viven en el proveedor regulado.
+El cobro a invitados y la dispersión al festejado se hacen a través de **EcartPay** (con quien ya existe relación directa), de modo que RegalaLove **nunca custodia legalmente el dinero** y no requiere licencia IFPE para operar: la experiencia se siente como "tengo un saldo y lo retiro", pero los fondos viven en el proveedor regulado.
 
 El modelo de ingresos combina: **comisión base configurable** al festejado, **absorción opcional de la comisión por parte del invitado** ("que el festejado reciba el 100%"), y un **plan Premium por evento** con comisión reducida y funciones extra. Todos estos parámetros son **editables sin tocar código**.
 
@@ -25,7 +25,7 @@ El modelo de ingresos combina: **comisión base configurable** al festejado, **a
 4. Como festejado, quiero que exista siempre un **fondo general** ("aportar libre") que nunca se llena, para los invitados que solo quieren dar dinero.
 5. Como festejado, quiero editar, reordenar y eliminar ítems de mi lista mientras la mesa esté activa, para mantenerla al día.
 6. Como festejado, quiero personalizar mi **página de evento** (foto de portada, historia/mensaje, fecha y lugar del evento, cuenta regresiva), para que el link que comparto sea cálido y se sienta mío.
-7. Como festejado, quiero obtener un **link personalizado** de mi mesa (ej. `regalove.com/juan-y-ana`), para compartirlo fácilmente.
+7. Como festejado, quiero obtener un **link personalizado** de mi mesa (ej. `regalalove.com/juan-y-ana`), para compartirlo fácilmente.
 8. Como festejado, quiero un botón para **compartir por WhatsApp** con un solo toque, para difundir mi mesa por el canal que usan mis invitados.
 9. Como festejado, quiero generar un **código QR** de mi mesa, para imprimirlo en mis invitaciones físicas.
 
@@ -75,9 +75,9 @@ El modelo de ingresos combina: **comisión base configurable** al festejado, **a
 - El modelo de datos es **agnóstico al tipo de evento**: un evento tiene un campo "tipo" configurable; nada de hardcodear "boda". El lenguaje/plantillas de lanzamiento apuntan a bodas, pero el motor soporta cualquier tipo.
 
 ### Modelo de custodia y flujo de dinero
-- Regalove **no custodia legalmente los fondos**. El dinero vive en **EcartPay** (proveedor regulado). Regalove lleva el **"saldo lógico" de cada mesa** como fuente de verdad de cara al usuario, y dispara cobros y dispersiones contra EcartPay.
+- RegalaLove **no custodia legalmente los fondos**. El dinero vive en **EcartPay** (proveedor regulado). RegalaLove lleva el **"saldo lógico" de cada mesa** como fuente de verdad de cara al usuario, y dispara cobros y dispersiones contra EcartPay.
 - Decisión de fondo: **"experiencia A (saldo flexible, retiro libre) sobre rieles B (proveedor regulado)"**, para no requerir licencia IFPE en el lanzamiento, conservando una arquitectura que permita migrar a un esquema regulado propio en el futuro sin rehacer el producto.
-- Pendiente operativo a cerrar con EcartPay (no bloquea diseño): tiempos de dispersión, segregación del saldo en espera, límites por transacción, y requisitos de PLD/KYC que EcartPay exija a Regalove y al festejado.
+- Pendiente operativo a cerrar con EcartPay (no bloquea diseño): tiempos de dispersión, segregación del saldo en espera, límites por transacción, y requisitos de PLD/KYC que EcartPay exija a RegalaLove y al festejado.
 
 ### Módulos (con foco en módulos profundos / deep modules)
 - **Motor de Saldo y Aportaciones (Ledger)** 🟢 — fuente de verdad del saldo. Registra cada aportación, la asigna a un ítem o al fondo general, calcula progreso por ítem, maneja **sobre-fondeo** (excedente se redirige al fondo general), y separa **saldo retirable vs. retenido** según método de pago y ventana de retención. Lógica de dominio aislada y testeable; no conoce a EcartPay.
@@ -126,8 +126,8 @@ Fuera del alcance del v1 (planeado para fase 2 / posterior):
 
 ## Further Notes
 
-- **Marca**: Regalove (regalo + love). Nombre y URL base viven en **configuración** (`NOMBRE_MARCA`, `URL_BASE`), no en el código, para conectar el dominio definitivo sin refactorizar.
-- **Competidor de referencia**: RegalaShop (regalashop.com.mx) — mismo modelo (mesa de dinero flexible). Diferenciadores de Regalove: página de evento más cálida y compartible (WhatsApp/QR), oferta de "el festejado recibe más" vía absorción de comisión, y experiencia mobile-first.
+- **Marca**: RegalaLove (regalo + love). Nombre y URL base viven en **configuración** (`NOMBRE_MARCA`, `URL_BASE`), no en el código, para conectar el dominio definitivo sin refactorizar.
+- **Competidor de referencia**: RegalaShop (regalashop.com.mx) — mismo modelo (mesa de dinero flexible). Diferenciadores de RegalaLove: página de evento más cálida y compartible (WhatsApp/QR), oferta de "el festejado recibe más" vía absorción de comisión, y experiencia mobile-first.
 - **Canal de difusión principal**: WhatsApp; cada boda (~100+ invitados) es un motor de adquisición orgánica.
 - **Construcción**: el proyecto se desarrolla de forma colaborativa (usuario + Claude Code), empezando por el esqueleto y avanzando módulo por módulo con despliegues tempranos en Vercel/Supabase.
 - **Tracker**: el repositorio es `github.com/cristobalgomez-pp/regalove`. Para usar los skills `to-issues`/`to-prd` con publicación a tracker, se usarán **GitHub Issues** y se configurarán las etiquetas de triage (`ready-for-agent`).

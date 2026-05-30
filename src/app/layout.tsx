@@ -24,7 +24,7 @@ export default function RootLayout({
         <nav className="nav">
           <div className="contenedor nav-inner">
             <Link href="/" className="marca">
-              Rega<span>love</span>
+              Regala<span>Love</span>
             </Link>
             <Link href="/login" className="btn btn-fantasma">
               Iniciar sesión
