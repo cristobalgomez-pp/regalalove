@@ -32,11 +32,13 @@ export default function PanelEnVivo({
   ventanaRetencionDias,
   itemsMap,
   inicial,
+  yaRetirado = 0,
 }: {
   eventoId: string;
   ventanaRetencionDias: number;
   itemsMap: Record<string, string>;
   inicial: AportacionVista[];
+  yaRetirado?: number;
 }) {
   const [lista, setLista] = useState<AportacionVista[]>(inicial);
 
@@ -77,8 +79,8 @@ export default function PanelEnVivo({
       Date.now(),
       { ventanaRetencionDias },
     );
-    return { saldoTotal: saldo, retirable: ret.retirable, retenido: ret.retenido };
-  }, [lista, ventanaRetencionDias]);
+    return { saldoTotal: saldo, retirable: Math.max(0, ret.retirable - yaRetirado), retenido: ret.retenido };
+  }, [lista, ventanaRetencionDias, yaRetirado]);
 
   return (
     <div>

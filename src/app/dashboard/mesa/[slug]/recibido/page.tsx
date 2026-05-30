@@ -26,7 +26,7 @@ export default async function RecibidoMesa({
   if (!evento) notFound();
   if (evento.festejado_id !== user.id) redirect("/dashboard");
 
-  const [{ data: items }, { data: aportaciones }, config] = await Promise.all([
+  const [{ data: items }, { data: aportaciones }, { data: retiros }, config] = await Promise.all([
     supabase.from("items_mesa").select("id, nombre").eq("evento_id", evento.id),
     supabase
       .from("aportaciones")
@@ -34,8 +34,11 @@ export default async function RecibidoMesa({
       .eq("evento_id", evento.id)
       .eq("estado", "confirmada")
       .order("creado_en", { ascending: false }),
+    supabase.from("retiros").select("monto_centavos").eq("evento_id", evento.id),
     obtenerConfigMonetizacion(),
   ]);
+
+  const yaRetirado = (retiros ?? []).reduce((s, r) => s + r.monto_centavos, 0);
 
   const itemsMap: Record<string, string> = {};
   for (const it of items ?? []) itemsMap[it.id] = it.nombre;
@@ -55,9 +58,24 @@ export default async function RecibidoMesa({
       <Link href="/dashboard" className="muted" style={{ fontSize: "0.9rem", textDecoration: "none" }}>
         ← Volver al panel
       </Link>
-      <header style={{ marginTop: "0.75rem", marginBottom: "1.5rem" }}>
-        <h1 style={{ fontSize: "1.8rem" }}>Regalos recibidos</h1>
-        <p className="muted" style={{ marginTop: "0.25rem" }}>{evento.titulo} · se actualiza en vivo</p>
+      <header
+        style={{
+          marginTop: "0.75rem",
+          marginBottom: "1.5rem",
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          gap: "1rem",
+          flexWrap: "wrap",
+        }}
+      >
+        <div>
+          <h1 style={{ fontSize: "1.8rem" }}>Regalos recibidos</h1>
+          <p className="muted" style={{ marginTop: "0.25rem" }}>{evento.titulo} · se actualiza en vivo</p>
+        </div>
+        <Link href={`/dashboard/mesa/${slug}/retirar`} className="btn btn-primario">
+          Retirar dinero
+        </Link>
       </header>
 
       <PanelEnVivo
@@ -65,6 +83,7 @@ export default async function RecibidoMesa({
         ventanaRetencionDias={config.ventanaRetencionDias}
         itemsMap={itemsMap}
         inicial={inicial}
+        yaRetirado={yaRetirado}
       />
     </main>
   );
