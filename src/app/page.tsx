@@ -5,7 +5,7 @@ export default function Home() {
   const { nombreMarca } = obtenerConfigApp();
 
   return (
-    <main className="contenedor" style={{ paddingTop: "clamp(2.5rem, 8vw, 5rem)", paddingBottom: "5rem" }}>
+    <main className="contenedor" style={{ paddingTop: "clamp(2.5rem, 8vw, 3rem)", paddingBottom: "3rem" }}>
       <div className="centro" style={{ maxWidth: 620, margin: "0 auto" }}>
         <span
           style={{
