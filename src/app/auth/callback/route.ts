@@ -1,5 +1,8 @@
 import { NextResponse } from "next/server";
 import { crearClienteServidorAuth } from "@/lib/supabase/servidor-auth";
+import { correoBienvenida } from "@/notificaciones/correos";
+import { enviarCorreos } from "@/notificaciones/enviador";
+import { obtenerEnviador } from "@/notificaciones/enviador.factory";
 
 /**
  * Procesa el enlace de confirmación de correo: intercambia el código por una
@@ -15,6 +18,20 @@ export async function GET(request: Request) {
     const supabase = await crearClienteServidorAuth();
     const { error } = await supabase.auth.exchangeCodeForSession(code);
     if (!error) {
+      // Bienvenida (no bloqueante). La app usa login con contraseña, así que
+      // este callback se visita esencialmente solo al confirmar el correo.
+      try {
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
+        if (user?.email) {
+          await enviarCorreos(obtenerEnviador(), [
+            correoBienvenida({ nombre: user.email, correo: user.email }),
+          ]);
+        }
+      } catch (e) {
+        console.error("No se pudo enviar la bienvenida:", e);
+      }
       return NextResponse.redirect(`${origin}${destino}`);
     }
   }
