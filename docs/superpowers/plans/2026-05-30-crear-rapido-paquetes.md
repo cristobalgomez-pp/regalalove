@@ -86,10 +86,11 @@ insert into paquete_items (paquete_id, catalogo_item_id, cantidad)
 select p.id, c.id, v.cantidad
 from p
 join (values
-  ('Batería de cocina', 2), ('Vajilla de 12 piezas', 2), ('Juego de sábanas', 2),
-  ('Edredón king size', 2), ('Almohadas (par)', 2), ('Cafetera espresso', 1),
-  ('Licuadora', 1), ('Microondas', 1), ('Aspiradora', 1), ('Mesa de centro', 1),
-  ('Lámpara de piso', 2), ('Juego de cuchillos', 1), ('Juego de copas', 2)
+  ('Batería de cocina', 2), ('Cafetera espresso', 2), ('Vajilla de 12 piezas', 2),
+  ('Edredón king size', 2), ('Juego de sábanas', 2), ('Juego de copas', 2),
+  ('Lámpara de piso', 2), ('Mesa de centro', 1), ('Aspiradora', 1),
+  ('Microondas', 1), ('Licuadora', 2), ('Juego de cuchillos', 1),
+  ('Cena romántica', 1)
 ) as v(nombre, cantidad) on true
 join catalogo_items c on c.nombre = v.nombre;
 
@@ -101,9 +102,9 @@ insert into paquete_items (paquete_id, catalogo_item_id, cantidad)
 select p.id, c.id, v.cantidad
 from p
 join (values
-  ('Batería de cocina', 3), ('Juego de cuchillos', 2), ('Cafetera espresso', 2),
-  ('Vajilla de 12 piezas', 4), ('Juego de copas', 4), ('Comedor de 6 sillas', 1),
-  ('Licuadora', 2), ('Microondas', 2), ('Aspiradora', 1), ('Mesa de centro', 1)
+  ('Comedor de 6 sillas', 3), ('Cafetera espresso', 3), ('Batería de cocina', 4),
+  ('Vajilla de 12 piezas', 7), ('Juego de copas', 4), ('Juego de cuchillos', 2),
+  ('Licuadora', 2), ('Microondas', 2), ('Aspiradora', 1)
 ) as v(nombre, cantidad) on true
 join catalogo_items c on c.nombre = v.nombre;
 
@@ -115,10 +116,11 @@ insert into paquete_items (paquete_id, catalogo_item_id, cantidad)
 select p.id, c.id, v.cantidad
 from p
 join (values
-  ('Noche de hotel', 6), ('Cena romántica', 6), ('Excursión', 6),
-  ('Vajilla de 12 piezas', 2), ('Juego de copas', 2), ('Cafetera espresso', 1),
-  ('Batería de cocina', 1), ('Edredón king size', 2), ('Juego de sábanas', 2),
-  ('Mesa de centro', 1), ('Lámpara de piso', 2)
+  ('Noche de hotel', 8), ('Cena romántica', 8), ('Excursión', 8),
+  ('Cafetera espresso', 2), ('Vajilla de 12 piezas', 4), ('Batería de cocina', 2),
+  ('Edredón king size', 4), ('Juego de sábanas', 4), ('Comedor de 6 sillas', 1),
+  ('Mesa de centro', 4), ('Lámpara de piso', 3), ('Microondas', 2),
+  ('Aspiradora', 1)
 ) as v(nombre, cantidad) on true
 join catalogo_items c on c.nombre = v.nombre;
 
@@ -130,12 +132,11 @@ insert into paquete_items (paquete_id, catalogo_item_id, cantidad)
 select p.id, c.id, v.cantidad
 from p
 join (values
-  ('Batería de cocina', 2), ('Juego de cuchillos', 2), ('Cafetera espresso', 2),
-  ('Comedor de 6 sillas', 1), ('Vajilla de 12 piezas', 4), ('Juego de copas', 4),
-  ('Edredón king size', 2), ('Juego de sábanas', 3), ('Almohadas (par)', 3),
-  ('Mesa de centro', 1), ('Lámpara de piso', 3), ('Licuadora', 2), ('Microondas', 2),
-  ('Aspiradora', 2), ('Sofá de 3 plazas', 1), ('Refrigerador', 1),
-  ('Cena romántica', 2), ('Noche de hotel', 1)
+  ('Refrigerador', 2), ('Sofá de 3 plazas', 2), ('Comedor de 6 sillas', 2),
+  ('Cafetera espresso', 3), ('Vajilla de 12 piezas', 8), ('Batería de cocina', 4),
+  ('Edredón king size', 4), ('Juego de sábanas', 5), ('Mesa de centro', 3),
+  ('Lámpara de piso', 4), ('Licuadora', 3), ('Microondas', 3),
+  ('Juego de copas', 5), ('Juego de cuchillos', 3), ('Cena romántica', 1)
 ) as v(nombre, cantidad) on true
 join catalogo_items c on c.nombre = v.nombre;
 
@@ -147,11 +148,10 @@ insert into paquete_items (paquete_id, catalogo_item_id, cantidad)
 select p.id, c.id, v.cantidad
 from p
 join (values
-  ('Refrigerador', 2), ('Sofá de 3 plazas', 2), ('Comedor de 6 sillas', 2),
-  ('Cafetera espresso', 2), ('Vajilla de 12 piezas', 4), ('Batería de cocina', 3),
-  ('Aspiradora', 2), ('Mesa de centro', 2), ('Lámpara de piso', 3),
-  ('Edredón king size', 3), ('Juego de sábanas', 4), ('Microondas', 2),
-  ('Licuadora', 2), ('Juego de copas', 4)
+  ('Refrigerador', 3), ('Sofá de 3 plazas', 3), ('Comedor de 6 sillas', 3),
+  ('Cafetera espresso', 3), ('Vajilla de 12 piezas', 10), ('Batería de cocina', 5),
+  ('Edredón king size', 5), ('Juego de sábanas', 6), ('Mesa de centro', 4),
+  ('Lámpara de piso', 5), ('Licuadora', 4), ('Almohadas (par)', 1)
 ) as v(nombre, cantidad) on true
 join catalogo_items c on c.nombre = v.nombre;
 
@@ -163,12 +163,10 @@ insert into paquete_items (paquete_id, catalogo_item_id, cantidad)
 select p.id, c.id, v.cantidad
 from p
 join (values
-  ('Refrigerador', 3), ('Sofá de 3 plazas', 3), ('Comedor de 6 sillas', 3),
-  ('Cafetera espresso', 3), ('Vajilla de 12 piezas', 6), ('Batería de cocina', 4),
-  ('Aspiradora', 3), ('Mesa de centro', 3), ('Lámpara de piso', 4),
-  ('Edredón king size', 4), ('Juego de sábanas', 5), ('Microondas', 3),
-  ('Licuadora', 3), ('Juego de copas', 6), ('Noche de hotel', 4),
-  ('Cena romántica', 4), ('Excursión', 3)
+  ('Refrigerador', 4), ('Sofá de 3 plazas', 4), ('Comedor de 6 sillas', 4),
+  ('Cafetera espresso', 4), ('Vajilla de 12 piezas', 12), ('Batería de cocina', 6),
+  ('Edredón king size', 6), ('Juego de sábanas', 8), ('Lámpara de piso', 6),
+  ('Juego de copas', 6)
 ) as v(nombre, cantidad) on true
 join catalogo_items c on c.nombre = v.nombre;
 
@@ -180,12 +178,10 @@ insert into paquete_items (paquete_id, catalogo_item_id, cantidad)
 select p.id, c.id, v.cantidad
 from p
 join (values
-  ('Refrigerador', 4), ('Sofá de 3 plazas', 4), ('Comedor de 6 sillas', 4),
-  ('Cafetera espresso', 4), ('Vajilla de 12 piezas', 8), ('Batería de cocina', 6),
-  ('Aspiradora', 4), ('Mesa de centro', 4), ('Lámpara de piso', 6),
-  ('Edredón king size', 6), ('Juego de sábanas', 8), ('Microondas', 4),
-  ('Licuadora', 4), ('Juego de copas', 8), ('Noche de hotel', 6),
-  ('Cena romántica', 6), ('Excursión', 6)
+  ('Refrigerador', 5), ('Sofá de 3 plazas', 5), ('Comedor de 6 sillas', 5),
+  ('Cafetera espresso', 5), ('Vajilla de 12 piezas', 14), ('Batería de cocina', 8),
+  ('Edredón king size', 8), ('Juego de sábanas', 10), ('Mesa de centro', 5),
+  ('Aspiradora', 8), ('Licuadora', 1), ('Almohadas (par)', 1)
 ) as v(nombre, cantidad) on true
 join catalogo_items c on c.nombre = v.nombre;
 
@@ -197,18 +193,16 @@ insert into paquete_items (paquete_id, catalogo_item_id, cantidad)
 select p.id, c.id, v.cantidad
 from p
 join (values
-  ('Refrigerador', 5), ('Sofá de 3 plazas', 5), ('Comedor de 6 sillas', 5),
-  ('Cafetera espresso', 5), ('Vajilla de 12 piezas', 10), ('Batería de cocina', 8),
-  ('Aspiradora', 6), ('Mesa de centro', 5), ('Lámpara de piso', 8),
-  ('Edredón king size', 8), ('Juego de sábanas', 10), ('Microondas', 6),
-  ('Licuadora', 6), ('Juego de copas', 10), ('Noche de hotel', 8),
-  ('Cena romántica', 8), ('Excursión', 8), ('Juego de cuchillos', 6),
-  ('Almohadas (par)', 8)
+  ('Refrigerador', 6), ('Sofá de 3 plazas', 6), ('Comedor de 6 sillas', 6),
+  ('Cafetera espresso', 6), ('Vajilla de 12 piezas', 16), ('Batería de cocina', 10),
+  ('Edredón king size', 10), ('Juego de sábanas', 12), ('Mesa de centro', 6),
+  ('Lámpara de piso', 8), ('Aspiradora', 6), ('Noche de hotel', 4),
+  ('Cena romántica', 2), ('Almohadas (par)', 2)
 ) as v(nombre, cantidad) on true
 join catalogo_items c on c.nombre = v.nombre;
 ```
 
-> Totales esperados (centavos→pesos, calculados): Esencial $43,800 · Cocina & Mesa $62,500 · Luna de miel $80,000 · Mesa Completa $121,400 · Hogar Plus $164,900 · Premium $271,800 · Casa Llena $377,800 · Todo Incluido $499,900.
+> Totales exactos (números cerrados): Esencial $50,000 · Cocina & Mesa $100,000 · Luna de miel $150,000 · Mesa Completa $200,000 · Hogar Plus $250,000 · Premium $300,000 · Casa Llena $400,000 · Todo Incluido $500,000.
 
 - [ ] **Step 2: Aplicar la migración al proyecto Supabase de Regalove**
 
@@ -232,7 +226,7 @@ group by p.nombre, p.orden
 order by p.orden;
 ```
 
-Expected: 8 filas con totales ≈ los del Step 1 (Esencial 43800 … Todo Incluido 499900). Si algún paquete tiene total 0 o ítems faltantes, significa que un `nombre` no coincidió con el catálogo → revisar acentos/escritura exacta.
+Expected: 8 filas con totales EXACTOS (Esencial 50000, Cocina & Mesa 100000, Luna de miel 150000, Mesa Completa 200000, Hogar Plus 250000, Premium 300000, Casa Llena 400000, Todo Incluido 500000). Si algún paquete tiene total 0 o ítems faltantes, significa que un `nombre` no coincidió con el catálogo → revisar acentos/escritura exacta. Si un total no es redondo, un `nombre` no hizo match.
 
 - [ ] **Step 4: Commit**
 
@@ -920,7 +914,7 @@ Con `pnpm dev` corriendo y sesión iniciada:
 1. Panel → "+ Crear mesa" → llega a `/dashboard/crear`.
 2. "Crear rápido" → se ven los 8 paquetes con sus totales (~$43,800 … ~$499,900) y preview de regalos.
 3. Escribir un título, dejar "Boda", clic en "Usar este" de "Mesa Esencial".
-4. Expected: redirige a `/dashboard/mesa/<slug>` y "En tu mesa" ya muestra los 13 regalos del paquete con sus montos; el Total ≈ $43,800.
+4. Expected: redirige a `/dashboard/mesa/<slug>` y "En tu mesa" ya muestra los 13 regalos del paquete con sus montos; el Total = $50,000 exacto.
 5. Quitar/ajustar un regalo → funciona como cualquier ítem (confirma que son editables).
 
 - [ ] **Step 3: Prueba manual del flujo manual (sin regresión)**
