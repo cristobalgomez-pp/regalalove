@@ -30,30 +30,26 @@ export default function Home() {
         </p>
       </div>
 
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
-          gap: "1.25rem",
-          maxWidth: 720,
-          margin: "3rem auto 0",
-        }}
-      >
+      <div className="home-cta" style={{ maxWidth: 720, margin: "3rem auto 0" }}>
         <div className="tarjeta">
-          <h2 style={{ fontSize: "1.35rem" }}>Crear mi mesa</h2>
-          <p className="muted" style={{ marginTop: "0.5rem", marginBottom: "1.5rem" }}>
-            Para festejados: arma tu lista de deseos y comparte tu mesa con todos.
-          </p>
+          <div className="home-cta-texto">
+            <h2 style={{ fontSize: "1.35rem" }}>Crear mi mesa</h2>
+            <p className="muted" style={{ marginTop: "0.5rem", marginBottom: "1.5rem" }}>
+              Para festejados: arma tu lista de deseos y comparte tu mesa con todos.
+            </p>
+          </div>
           <Link href="/registro" className="btn btn-primario btn-bloque">
             Crear mi mesa
           </Link>
         </div>
 
         <div className="tarjeta">
-          <h2 style={{ fontSize: "1.35rem" }}>Regalar a una mesa</h2>
-          <p className="muted" style={{ marginTop: "0.5rem", marginBottom: "1.5rem" }}>
-            Para invitados: encuentra la mesa del festejado y haz tu regalo en segundos.
-          </p>
+          <div className="home-cta-texto">
+            <h2 style={{ fontSize: "1.35rem" }}>Regalar a una mesa</h2>
+            <p className="muted" style={{ marginTop: "0.5rem", marginBottom: "1.5rem" }}>
+              Para invitados: encuentra la mesa del festejado y haz tu regalo en segundos.
+            </p>
+          </div>
           <Link href="/regalar" className="btn btn-contorno btn-bloque">
             Regalar a una mesa
           </Link>

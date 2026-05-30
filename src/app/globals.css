@@ -24,6 +24,11 @@ body {
   margin: 0;
   padding: 0;
 }
+/* Mata cualquier scroll horizontal accidental sin romper position: sticky
+   (clip, a diferencia de hidden, no crea un contenedor de scroll). */
+html {
+  overflow-x: clip;
+}
 
 body {
   background: var(--bg);
@@ -184,6 +189,13 @@ select.input:focus {
 }
 
 /* ===== Layouts responsivos ===== */
+/* Home: par de CTAs. Desktop = tarjetas; móvil = 2 botones lado a lado. */
+.home-cta {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1.25rem;
+}
+
 .grid-panel {
   display: grid;
   grid-template-columns: minmax(280px, 360px) 1fr;
@@ -225,6 +237,27 @@ select.input:focus {
   .grid-panel,
   .grid-mesa {
     grid-template-columns: 1fr;
+  }
+
+  /* Home: dos botones lado a lado, sin el texto descriptivo */
+  .home-cta {
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+    margin-top: 2rem !important;
+    align-items: stretch;
+  }
+  .home-cta > .tarjeta {
+    padding: 0;
+    border: none;
+    box-shadow: none;
+    background: transparent;
+    display: flex;
+  }
+  .home-cta-texto {
+    display: none;
+  }
+  .home-cta .btn {
+    height: 100%;
   }
   .mesa-aside {
     position: static;
