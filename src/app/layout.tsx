@@ -23,8 +23,13 @@ export default function RootLayout({
       <body className={inter.variable}>
         <nav className="nav">
           <div className="contenedor nav-inner">
-            <Link href="/" className="marca">
-              Regala<span>Love</span>
+            <Link href="/" className="marca" aria-label={nombreMarca}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/logo-regalalove.png"
+                alt={nombreMarca}
+                style={{ height: 28, width: "auto", display: "block" }}
+              />
             </Link>
             <Link href="/login" className="btn btn-fantasma">
               Iniciar sesión
