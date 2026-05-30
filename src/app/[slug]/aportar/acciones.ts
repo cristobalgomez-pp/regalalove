@@ -8,6 +8,9 @@ import { calcularComision } from "@/fees/fees";
 import { crearEcartPayFake } from "@/pagos/ecartpay.fake";
 import { asentarAportacion } from "@/pagos/persistencia";
 import type { MetodoPago } from "@/dominio/tipos";
+import { correosPorAportacion } from "@/notificaciones/correos";
+import { enviarCorreos } from "@/notificaciones/enviador";
+import { obtenerEnviador } from "@/notificaciones/enviador.factory";
 
 const METODOS: MetodoPago[] = ["tarjeta", "spei", "oxxo", "codi"];
 
@@ -21,7 +24,7 @@ export async function procesarAportacion(slug: string, formData: FormData) {
 
   const { data: evento } = await supabase
     .from("eventos")
-    .select("id")
+    .select("id, festejado_id")
     .eq("slug", slug)
     .maybeSingle();
   if (!evento) throw new Error("Mesa no encontrada");
@@ -72,6 +75,32 @@ export async function procesarAportacion(slug: string, formData: FormData) {
     absorbeComision: absorbe,
     comisionCentavos: comision,
   });
+
+  // Correos transaccionales: no deben romper el flujo si Resend falla.
+  try {
+    let itemNombre = "Fondo general";
+    if (itemId) {
+      const { data: item } = await supabase
+        .from("items_mesa")
+        .select("nombre")
+        .eq("id", itemId)
+        .maybeSingle();
+      if (item?.nombre) itemNombre = item.nombre;
+    }
+    // `supabase` es el cliente service-role (crearClienteServidor): auth.admin
+    // no funciona con el cliente anon. No cambiar a crearClienteServidorAuth.
+    const { data: festejadoUser } = await supabase.auth.admin.getUserById(evento.festejado_id);
+    const correoFestejado = festejadoUser?.user?.email;
+    if (correoFestejado && correo) {
+      const correos = correosPorAportacion(
+        { invitado: { nombre, correo, mensaje }, monto: montoCentavos, itemNombre },
+        { nombre: correoFestejado, correo: correoFestejado },
+      );
+      await enviarCorreos(obtenerEnviador(), correos);
+    }
+  } catch (e) {
+    console.error("No se pudieron enviar los correos de la aportación:", e);
+  }
 
   revalidatePath(`/${slug}`);
   redirect(`/${slug}/gracias?monto=${montoPesos}`);

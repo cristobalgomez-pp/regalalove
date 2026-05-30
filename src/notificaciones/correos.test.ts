@@ -1,5 +1,5 @@
 import { test, expect } from "vitest";
-import { correosPorAportacion, correoPorRetiro } from "./correos";
+import { correosPorAportacion, correoPorRetiro, correoBienvenida } from "./correos";
 
 const aportacion = {
   invitado: { nombre: "Tía Lucha", correo: "lucha@example.com", mensaje: "¡Felicidades!" },
@@ -45,4 +45,12 @@ test("un retiro completado genera un aviso por correo para el festejado", () => 
     nombreFestejado: "Ana",
     monto: 120000,
   });
+});
+
+test("la bienvenida va al festejado con su nombre", () => {
+  const correo = correoBienvenida({ nombre: "Ana", correo: "ana@example.com" });
+
+  expect(correo.plantilla).toBe("bienvenida");
+  expect(correo.destinatario).toBe("ana@example.com");
+  expect(correo.datos).toMatchObject({ nombreFestejado: "Ana" });
 });
