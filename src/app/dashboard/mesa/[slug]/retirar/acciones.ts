@@ -4,6 +4,9 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { crearClienteServidorAuth } from "@/lib/supabase/servidor-auth";
 import { calcularSaldoRetiro } from "./calculo";
+import { correoPorRetiro } from "@/notificaciones/correos";
+import { enviarCorreos } from "@/notificaciones/enviador";
+import { obtenerEnviador } from "@/notificaciones/enviador.factory";
 
 /** Guarda los datos KYC del festejado (nombre completo + CLABE). */
 export async function guardarKyc(slug: string, formData: FormData) {
@@ -64,6 +67,17 @@ export async function solicitarRetiro(slug: string, formData: FormData) {
     estado: "completado",
   });
   if (error) throw new Error(`No se pudo procesar el retiro: ${error.message}`);
+
+  // Aviso de retiro (no bloqueante). El festejado es el usuario logueado.
+  try {
+    if (user.email) {
+      await enviarCorreos(obtenerEnviador(), [
+        correoPorRetiro({ monto: montoCentavos }, { nombre: user.email, correo: user.email }),
+      ]);
+    }
+  } catch (e) {
+    console.error("No se pudo enviar el aviso de retiro:", e);
+  }
 
   revalidatePath(`/dashboard/mesa/${slug}/retirar`);
   revalidatePath(`/dashboard/mesa/${slug}/recibido`);
