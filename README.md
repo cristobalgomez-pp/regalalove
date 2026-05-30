@@ -1,4 +1,4 @@
-# Regalove
+# RegalaLove
 
 Plataforma de **mesas de regalos en efectivo** para eventos (bodas como mercado inicial). El festejado crea una mesa con lista de deseos; los invitados aportan dinero sin necesidad de cuenta; todo se convierte en saldo flexible que el festejado retira a su cuenta. Cobro y dispersión vía EcartPay.
 

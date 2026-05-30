@@ -12,7 +12,7 @@ export interface ConfigApp {
 
 export function obtenerConfigApp(): ConfigApp {
   return {
-    nombreMarca: process.env.NOMBRE_MARCA ?? "Regalove",
+    nombreMarca: process.env.NOMBRE_MARCA ?? "RegalaLove",
     urlBase: process.env.URL_BASE ?? "http://localhost:3000",
   };
 }
