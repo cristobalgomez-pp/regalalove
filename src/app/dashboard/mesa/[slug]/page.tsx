@@ -46,7 +46,10 @@ export default async function GestionMesa({
   const total = lista.reduce((s, it) => s + it.monto_meta_centavos, 0);
 
   return (
-    <main className="contenedor" style={{ paddingTop: "2rem", paddingBottom: "4rem", maxWidth: 1100 }}>
+    <main
+      className={`contenedor${lista.length > 0 ? " con-barra-movil" : ""}`}
+      style={{ paddingTop: "2rem", paddingBottom: "4rem", maxWidth: 1100 }}
+    >
       <Link href="/dashboard" className="muted" style={{ fontSize: "0.9rem", textDecoration: "none" }}>
         ← Volver al panel
       </Link>
@@ -79,14 +82,7 @@ export default async function GestionMesa({
         </div>
       </header>
 
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "1fr minmax(280px, 340px)",
-          gap: "1.75rem",
-          alignItems: "start",
-        }}
-      >
+      <div className="grid-mesa">
         {/* IZQUIERDA: catálogo + ítem propio */}
         <div>
           <h2 style={{ fontSize: "1.2rem", marginBottom: "0.25rem" }}>Catálogo de regalos</h2>
@@ -132,7 +128,7 @@ export default async function GestionMesa({
         </div>
 
         {/* DERECHA: tu mesa (sticky) */}
-        <aside style={{ position: "sticky", top: "1.5rem" }}>
+        <aside className="mesa-aside">
           <div className="tarjeta">
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
               <h2 style={{ fontSize: "1.15rem" }}>En tu mesa</h2>
@@ -218,6 +214,20 @@ export default async function GestionMesa({
           </div>
         </aside>
       </div>
+
+      {lista.length > 0 && (
+        <div className="barra-movil">
+          <div>
+            <div className="muted" style={{ fontSize: "0.75rem" }}>
+              Total · {lista.length} regalos
+            </div>
+            <strong style={{ fontSize: "1.1rem" }}>{pesos(total)}</strong>
+          </div>
+          <Link href={`/dashboard/mesa/${slug}/resumen`} className="btn btn-primario">
+            Continuar →
+          </Link>
+        </div>
+      )}
     </main>
   );
 }

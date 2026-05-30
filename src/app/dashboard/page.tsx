@@ -64,14 +64,7 @@ export default async function Dashboard() {
         Sesión iniciada como <strong style={{ color: "var(--ink)" }}>{user.email}</strong>
       </p>
 
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "minmax(280px, 360px) 1fr",
-          gap: "1.5rem",
-          alignItems: "start",
-        }}
-      >
+      <div className="grid-panel">
         <section className="tarjeta">
           <h2 style={{ fontSize: "1.2rem", marginBottom: "0.5rem" }}>Crear una mesa</h2>
           <p className="muted" style={{ marginTop: 0, marginBottom: "1.25rem" }}>

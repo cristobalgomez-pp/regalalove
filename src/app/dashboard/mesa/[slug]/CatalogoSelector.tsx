@@ -80,16 +80,7 @@ export default function CatalogoSelector({
       ) : (
         <div className="pila" style={{ gap: "0.6rem" }}>
           {filtrado.map((item) => (
-            <div
-              key={item.id}
-              className="tarjeta"
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "1rem",
-                padding: "0.6rem 0.85rem",
-              }}
-            >
+            <div key={item.id} className="tarjeta fila-catalogo">
               {item.imagen_url ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
@@ -115,7 +106,7 @@ export default function CatalogoSelector({
 
               <form
                 action={agregarDesdeCatalogo.bind(null, slug, item.id)}
-                style={{ flexShrink: 0, display: "flex", alignItems: "center", gap: "0.6rem" }}
+                className="fila-catalogo-form"
               >
                 {/* Precio editable */}
                 <label style={{ display: "flex", alignItems: "center", gap: "0.2rem", fontSize: "0.85rem" }} title="Edita el precio a tu gusto">
