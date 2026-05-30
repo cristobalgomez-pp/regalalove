@@ -61,7 +61,7 @@ export default function CompartirMesa({
       ) : null}
 
       <div style={{ display: "flex", gap: "0.5rem", marginBottom: "1rem", flexWrap: "wrap" }}>
-        <input className="input" readOnly value={url} style={{ flex: "1 1 240px" }} />
+        <input className="input" readOnly value={url} style={{ flex: "1 1 200px", minWidth: 0 }} />
         <button type="button" className="btn btn-contorno" onClick={copiar}>
           {copiado ? "¡Copiado!" : "Copiar"}
         </button>

@@ -99,15 +99,18 @@ export default async function ResumenMesa({
                   style={{
                     display: "flex",
                     justifyContent: "space-between",
+                    gap: "0.75rem",
                     paddingBottom: "0.5rem",
                     borderBottom: "1px solid var(--border)",
                   }}
                 >
-                  <span>
+                  <span style={{ minWidth: 0, overflowWrap: "anywhere" }}>
                     {it.nombre}
                     {it.cantidad > 1 ? <span className="muted"> × {it.cantidad}</span> : null}
                   </span>
-                  <span className="muted">{pesos(it.monto_meta_centavos)}</span>
+                  <span className="muted" style={{ flexShrink: 0, whiteSpace: "nowrap" }}>
+                    {pesos(it.monto_meta_centavos)}
+                  </span>
                 </div>
               ))}
             </div>
