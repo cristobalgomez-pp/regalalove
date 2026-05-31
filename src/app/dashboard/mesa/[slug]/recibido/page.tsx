@@ -3,6 +3,7 @@ import { cargarMesaDelFestejado } from "@/lib/mesa";
 import { itemsDeMesa, aportacionesConfirmadas } from "@/lib/datos-mesa";
 import { obtenerConfigMonetizacion } from "@/config/obtenerConfigMonetizacion";
 import PanelEnVivo, { type AportacionVista } from "./PanelEnVivo";
+import type { DefinicionItem } from "@/ledger/ledger";
 import type { MetodoPago } from "@/dominio/tipos";
 
 export default async function RecibidoMesa({
@@ -29,10 +30,16 @@ export default async function RecibidoMesa({
   const itemsMap: Record<string, string> = {};
   for (const it of items) itemsMap[it.id] = it.nombre;
 
+  const definicionesItems: DefinicionItem[] = items.map((it) => ({
+    id: it.id,
+    montoMeta: it.monto_meta_centavos,
+  }));
+
   const inicial: AportacionVista[] = aportaciones.map((a) => ({
     id: a.id,
     nombre: a.nombre_invitado,
     monto: a.monto_centavos,
+    itemId: a.item_id,
     itemNombre: a.item_id ? itemsMap[a.item_id] ?? "Un regalo" : null,
     mensaje: a.mensaje ?? "",
     metodoPago: a.metodo_pago as MetodoPago,
@@ -67,6 +74,7 @@ export default async function RecibidoMesa({
       <PanelEnVivo
         eventoId={evento.id}
         ventanaRetencionDias={config.ventanaRetencionDias}
+        items={definicionesItems}
         itemsMap={itemsMap}
         inicial={inicial}
         yaRetirado={yaRetirado}
