@@ -2,13 +2,16 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { crearClienteNavegador } from "@/lib/supabase/navegador";
-import { calcularRetencion } from "@/retencion/retencion";
+import { resumenDashboard } from "@/dashboard/resumen";
+import type { DefinicionItem } from "@/ledger/ledger";
+import type { AportacionAsentada } from "@/pagos/webhook";
 import type { MetodoPago } from "@/dominio/tipos";
 
 export interface AportacionVista {
   id: string;
   nombre: string;
   monto: number; // centavos
+  itemId: string | null;
   itemNombre: string | null;
   mensaje: string;
   metodoPago: MetodoPago;
@@ -30,12 +33,14 @@ const METODO_ETIQUETA: Record<string, string> = {
 export default function PanelEnVivo({
   eventoId,
   ventanaRetencionDias,
+  items,
   itemsMap,
   inicial,
   yaRetirado = 0,
 }: {
   eventoId: string;
   ventanaRetencionDias: number;
+  items: DefinicionItem[];
   itemsMap: Record<string, string>;
   inicial: AportacionVista[];
   yaRetirado?: number;
@@ -52,11 +57,13 @@ export default function PanelEnVivo({
         (payload) => {
           const r = payload.new as Record<string, unknown>;
           if (r.estado !== "confirmada") return;
+          const itemId = r.item_id ? String(r.item_id) : null;
           const nueva: AportacionVista = {
             id: String(r.id),
             nombre: String(r.nombre_invitado ?? "Alguien"),
             monto: Number(r.monto_centavos),
-            itemNombre: r.item_id ? itemsMap[String(r.item_id)] ?? "Un regalo" : null,
+            itemId,
+            itemNombre: itemId ? itemsMap[itemId] ?? "Un regalo" : null,
             mensaje: String(r.mensaje ?? ""),
             metodoPago: r.metodo_pago as MetodoPago,
             fecha: new Date(String(r.creado_en)).getTime(),
@@ -72,15 +79,27 @@ export default function PanelEnVivo({
     };
   }, [eventoId, itemsMap]);
 
+  // El saldo se calcula con la MISMA función que el panel del servidor
+  // (resumenDashboard): el número en vivo no puede divergir del de una recarga.
   const { saldoTotal, retirable, retenido } = useMemo(() => {
-    const saldo = lista.reduce((s, a) => s + a.monto, 0);
-    const ret = calcularRetencion(
-      lista.map((a) => ({ monto: a.monto, metodoPago: a.metodoPago, fecha: a.fecha })),
-      Date.now(),
-      { ventanaRetencionDias },
-    );
-    return { saldoTotal: saldo, retirable: Math.max(0, ret.retirable - yaRetirado), retenido: ret.retenido };
-  }, [lista, ventanaRetencionDias, yaRetirado]);
+    const idsConocidos = new Set(items.map((i) => i.id));
+    const asentadas: AportacionAsentada[] = lista.map((a) => ({
+      // un ítem borrado se cuenta como fondo general: mismo total, sin romper el replay
+      itemId: a.itemId && idsConocidos.has(a.itemId) ? a.itemId : null,
+      monto: a.monto,
+      metodoPago: a.metodoPago,
+      fecha: a.fecha,
+      cobroId: a.id,
+      nombre: a.nombre,
+      mensaje: a.mensaje,
+    }));
+    const r = resumenDashboard(items, asentadas, Date.now(), { ventanaRetencionDias });
+    return {
+      saldoTotal: r.saldoTotal,
+      retirable: Math.max(0, r.retirable - yaRetirado),
+      retenido: r.retenido,
+    };
+  }, [lista, items, ventanaRetencionDias, yaRetirado]);
 
   return (
     <div>
