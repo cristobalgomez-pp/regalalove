@@ -62,11 +62,13 @@ export async function procesarAportacion(slug: string, formData: FormData) {
     invitado: { nombre, mensaje },
   });
 
-  // Simulamos la confirmación del pago: asentamos la aportación.
+  // Simulamos la confirmación del pago: asentamos la aportación. El cobroId de
+  // la pasarela es la clave de idempotencia (único por cobro): reasentarlo no
+  // duplica, gracias al upsert onConflict de persistencia.
   await asentarAportacion(supabase, {
     eventoId: evento.id,
     itemId,
-    cobroId: `${cobro.cobroId}-${Date.now()}-${Math.floor(Math.random() * 1e6)}`,
+    cobroId: cobro.cobroId,
     monto: montoCentavos,
     metodoPago,
     nombreInvitado: nombre,

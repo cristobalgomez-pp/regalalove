@@ -1,3 +1,4 @@
+import { randomUUID } from "node:crypto";
 import type { Cobro, ParamsCobro, PasarelaPago } from "./pasarela.js";
 
 /** Pasarela simulada para pruebas: implementa el puerto y registra los cobros
@@ -14,10 +15,13 @@ export function crearEcartPayFake(): EcartPayFake {
     cobros,
     async crearCobro(params: ParamsCobro): Promise<Cobro> {
       cobros.push(params);
-      const indice = cobros.length;
+      // cobroId único y estable por cobro: es la clave de idempotencia con la
+      // que se asienta la aportación. El adaptador real usará el id que asigne
+      // EcartPay; aquí lo simulamos con un UUID.
+      const cobroId = `cobro_${randomUUID()}`;
       return {
-        cobroId: `cobro_fake_${indice}`,
-        referencia: `REF-${indice}`,
+        cobroId,
+        referencia: `REF-${cobros.length}`,
       };
     },
   };
