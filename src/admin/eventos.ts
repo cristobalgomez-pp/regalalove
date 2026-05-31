@@ -3,9 +3,8 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { itemsDeMesa, aportacionesConfirmadas } from "@/lib/datos-mesa";
 import { obtenerConfigMonetizacion } from "@/config/obtenerConfigMonetizacion";
 import { resumenDashboard } from "@/dashboard/resumen";
-import type { AportacionAsentada } from "@/pagos/webhook";
+import { filaAAsentada } from "@/aportaciones/proyecciones";
 import type { DefinicionItem } from "@/ledger/ledger";
-import type { MetodoPago } from "@/dominio/tipos";
 
 interface EventoRow {
   id: string;
@@ -55,15 +54,7 @@ export async function listarEventosAdmin(db: SupabaseClient): Promise<EventoAdmi
       id: it.id,
       montoMeta: it.monto_meta_centavos,
     }));
-    const asentadas: AportacionAsentada[] = aps.map((a) => ({
-      cobroId: a.id,
-      itemId: a.item_id,
-      monto: a.monto_centavos,
-      metodoPago: a.metodo_pago as MetodoPago,
-      fecha: new Date(a.creado_en).getTime(),
-      nombre: a.nombre_invitado,
-      mensaje: a.mensaje ?? "",
-    }));
+    const asentadas = aps.map(filaAAsentada);
 
     const r = resumenDashboard(definiciones, asentadas, ahora, {
       ventanaRetencionDias: config.ventanaRetencionDias,

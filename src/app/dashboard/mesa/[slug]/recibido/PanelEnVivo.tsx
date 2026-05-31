@@ -3,21 +3,10 @@
 import { useEffect, useMemo, useState } from "react";
 import { crearClienteNavegador } from "@/lib/supabase/navegador";
 import { resumenDashboard } from "@/dashboard/resumen";
+import { filaAAsentada, vistaDesde, type AportacionVista } from "@/aportaciones/proyecciones";
+import type { AportacionConfirmadaRow } from "@/lib/datos-mesa";
 import type { DefinicionItem } from "@/ledger/ledger";
 import type { AportacionAsentada } from "@/pagos/webhook";
-import type { MetodoPago } from "@/dominio/tipos";
-
-export interface AportacionVista {
-  id: string;
-  nombre: string;
-  monto: number; // centavos
-  itemId: string | null;
-  itemNombre: string | null;
-  mensaje: string;
-  metodoPago: MetodoPago;
-  fecha: number; // epoch ms
-  nuevo?: boolean;
-}
 
 function pesos(centavos: number): string {
   return (centavos / 100).toLocaleString("es-MX", { style: "currency", currency: "MXN" });
@@ -57,18 +46,18 @@ export default function PanelEnVivo({
         (payload) => {
           const r = payload.new as Record<string, unknown>;
           if (r.estado !== "confirmada") return;
-          const itemId = r.item_id ? String(r.item_id) : null;
-          const nueva: AportacionVista = {
+          // Normalizamos el payload realtime a una fila y la pasamos por la MISMA
+          // proyección que usa el servidor: el realtime no puede divergir.
+          const fila: AportacionConfirmadaRow = {
             id: String(r.id),
-            nombre: String(r.nombre_invitado ?? "Alguien"),
-            monto: Number(r.monto_centavos),
-            itemId,
-            itemNombre: itemId ? itemsMap[itemId] ?? "Un regalo" : null,
-            mensaje: String(r.mensaje ?? ""),
-            metodoPago: r.metodo_pago as MetodoPago,
-            fecha: new Date(String(r.creado_en)).getTime(),
-            nuevo: true,
+            nombre_invitado: String(r.nombre_invitado ?? "Alguien"),
+            monto_centavos: Number(r.monto_centavos),
+            item_id: r.item_id ? String(r.item_id) : null,
+            mensaje: r.mensaje == null ? null : String(r.mensaje),
+            metodo_pago: String(r.metodo_pago),
+            creado_en: String(r.creado_en),
           };
+          const nueva: AportacionVista = { ...vistaDesde(filaAAsentada(fila), itemsMap), nuevo: true };
           setLista((prev) => (prev.some((a) => a.id === nueva.id) ? prev : [nueva, ...prev]));
         },
       )

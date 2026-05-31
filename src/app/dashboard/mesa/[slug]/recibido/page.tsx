@@ -2,9 +2,9 @@ import Link from "next/link";
 import { cargarMesaDelFestejado } from "@/lib/mesa";
 import { itemsDeMesa, aportacionesConfirmadas } from "@/lib/datos-mesa";
 import { obtenerConfigMonetizacion } from "@/config/obtenerConfigMonetizacion";
-import PanelEnVivo, { type AportacionVista } from "./PanelEnVivo";
+import PanelEnVivo from "./PanelEnVivo";
+import { filaAAsentada, vistaDesde } from "@/aportaciones/proyecciones";
 import type { DefinicionItem } from "@/ledger/ledger";
-import type { MetodoPago } from "@/dominio/tipos";
 
 export default async function RecibidoMesa({
   params,
@@ -35,16 +35,7 @@ export default async function RecibidoMesa({
     montoMeta: it.monto_meta_centavos,
   }));
 
-  const inicial: AportacionVista[] = aportaciones.map((a) => ({
-    id: a.id,
-    nombre: a.nombre_invitado,
-    monto: a.monto_centavos,
-    itemId: a.item_id,
-    itemNombre: a.item_id ? itemsMap[a.item_id] ?? "Un regalo" : null,
-    mensaje: a.mensaje ?? "",
-    metodoPago: a.metodo_pago as MetodoPago,
-    fecha: new Date(a.creado_en).getTime(),
-  }));
+  const inicial = aportaciones.map(filaAAsentada).map((a) => vistaDesde(a, itemsMap));
 
   return (
     <main className="contenedor" style={{ paddingTop: "2rem", paddingBottom: "4rem", maxWidth: 760 }}>
