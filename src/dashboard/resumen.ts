@@ -1,10 +1,10 @@
-import { reconstruirEstadoMesa } from "../ledger/reconstruir.js";
-import { saldoTotal } from "../ledger/ledger.js";
-import type { DefinicionItem } from "../ledger/ledger.js";
-import { calcularRetencion } from "../retencion/retencion.js";
-import type { ConfigRetencion } from "../retencion/retencion.js";
-import type { AportacionAsentada } from "../pagos/webhook.js";
-import { feedDe, type AportacionFeed } from "../aportaciones/proyecciones.js";
+import { reconstruirEstadoMesa } from "../ledger/reconstruir";
+import { saldoTotal } from "../ledger/ledger";
+import type { DefinicionItem } from "../ledger/ledger";
+import { calcularRetencion } from "../retencion/retencion";
+import type { ConfigRetencion } from "../retencion/retencion";
+import type { AportacionAsentada } from "../pagos/webhook";
+import { feedDe, type AportacionFeed } from "../aportaciones/proyecciones";
 
 export type { AportacionFeed };
 

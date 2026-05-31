@@ -1,5 +1,5 @@
-import type { CorreoPendiente } from "./correos.js";
-import type { EnviadorCorreo } from "./enviador.js";
+import type { CorreoPendiente } from "./correos";
+import type { EnviadorCorreo } from "./enviador";
 
 /** Enviador simulado para pruebas: registra los correos en vez de mandarlos. */
 export interface EnviadorFake extends EnviadorCorreo {

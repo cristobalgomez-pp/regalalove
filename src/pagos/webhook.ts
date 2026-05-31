@@ -1,5 +1,5 @@
-import type { MetodoPago } from "../dominio/tipos.js";
-import type { AportacionPersistida } from "../ledger/reconstruir.js";
+import type { MetodoPago } from "../dominio/tipos";
+import type { AportacionPersistida } from "../ledger/reconstruir";
 
 /** Eventos que EcartPay (o su simulador) emite hacia nuestro webhook. */
 export interface EventoPago {

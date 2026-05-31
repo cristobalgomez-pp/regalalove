@@ -1,4 +1,4 @@
-import type { CorreoPendiente } from "./correos.js";
+import type { CorreoPendiente } from "./correos";
 
 const MARCA = "RegalaLove";
 

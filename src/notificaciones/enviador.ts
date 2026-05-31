@@ -1,4 +1,4 @@
-import type { CorreoPendiente } from "./correos.js";
+import type { CorreoPendiente } from "./correos";
 
 /**
  * Puerto de envío de correo. El resto de la app depende de esta interfaz, no

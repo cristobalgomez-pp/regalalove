@@ -1,5 +1,5 @@
-import type { CorreoPendiente } from "./correos.js";
-import type { EnviadorCorreo } from "./enviador.js";
+import type { CorreoPendiente } from "./correos";
+import type { EnviadorCorreo } from "./enviador";
 import { crearEnviadorResend } from "./resend";
 
 /** Enviador no-op: loguea en vez de mandar. Para dev/preview sin credenciales. */

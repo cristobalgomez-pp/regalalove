@@ -1,6 +1,6 @@
-import type { CorreoPendiente } from "./correos.js";
-import type { EnviadorCorreo } from "./enviador.js";
-import { renderizar } from "./plantillas.js";
+import type { CorreoPendiente } from "./correos";
+import type { EnviadorCorreo } from "./enviador";
+import { renderizar } from "./plantillas";
 
 /**
  * Adaptador del puerto EnviadorCorreo sobre la API REST de Resend. Solo se
