@@ -49,3 +49,31 @@ export async function aportacionesConfirmadas(
     .order("creado_en", { ascending: false });
   return (data ?? []) as unknown as AportacionConfirmadaRow[];
 }
+
+/** Variantes batch (varias mesas en una sola lectura) para el panel admin:
+ * evitan el N+1 de consultar ítem/aportación por evento. Incluyen `evento_id`
+ * para poder agrupar en memoria. */
+export async function itemsDeMesas(
+  db: SupabaseClient,
+  eventoIds: string[],
+): Promise<(ItemMesaRow & { evento_id: string })[]> {
+  const { data } = await db
+    .from("items_mesa")
+    .select("id, nombre, descripcion, imagen_url, monto_meta_centavos, cantidad, orden, evento_id")
+    .in("evento_id", eventoIds)
+    .order("orden", { ascending: true });
+  return (data ?? []) as unknown as (ItemMesaRow & { evento_id: string })[];
+}
+
+export async function aportacionesConfirmadasDe(
+  db: SupabaseClient,
+  eventoIds: string[],
+): Promise<(AportacionConfirmadaRow & { evento_id: string })[]> {
+  const { data } = await db
+    .from("aportaciones")
+    .select("id, nombre_invitado, monto_centavos, item_id, mensaje, metodo_pago, creado_en, evento_id")
+    .eq("estado", "confirmada")
+    .in("evento_id", eventoIds)
+    .order("creado_en", { ascending: false });
+  return (data ?? []) as unknown as (AportacionConfirmadaRow & { evento_id: string })[];
+}
