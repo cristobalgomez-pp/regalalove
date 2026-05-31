@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { crearClienteServidorAuth } from "@/lib/supabase/servidor-auth";
+import { itemsDeMesa, aportacionesConfirmadas } from "@/lib/datos-mesa";
 
 const ETIQUETA_TIPO: Record<string, string> = {
   boda: "Boda",
@@ -43,25 +44,17 @@ export default async function PaginaEvento({
 
   const fecha = fechaLarga(evento.fecha_evento);
 
-  const [{ data: items }, { data: aportaciones }] = await Promise.all([
-    supabase
-      .from("items_mesa")
-      .select("id, nombre, descripcion, imagen_url, monto_meta_centavos, cantidad")
-      .eq("evento_id", evento.id)
-      .order("orden", { ascending: true }),
-    supabase
-      .from("aportaciones")
-      .select("item_id, monto_centavos")
-      .eq("evento_id", evento.id)
-      .eq("estado", "confirmada"),
+  const [items, aportaciones] = await Promise.all([
+    itemsDeMesa(supabase, evento.id),
+    aportacionesConfirmadas(supabase, evento.id),
   ]);
 
-  const lista = items ?? [];
+  const lista = items;
 
   // Suma lo aportado por ítem y al fondo general.
   const fondeadoPorItem = new Map<string, number>();
   let fondoGeneral = 0;
-  for (const a of aportaciones ?? []) {
+  for (const a of aportaciones) {
     if (a.item_id) {
       fondeadoPorItem.set(a.item_id, (fondeadoPorItem.get(a.item_id) ?? 0) + a.monto_centavos);
     } else {

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { cargarMesaDelFestejado } from "@/lib/mesa";
+import { itemsDeMesa } from "@/lib/datos-mesa";
 import { agregarItem, eliminarItem, ajustarCantidad } from "./acciones";
 import CatalogoSelector from "./CatalogoSelector";
 
@@ -19,19 +20,15 @@ export default async function GestionMesa({
     festejado_id: string;
   }>(slug, "id, titulo, festejado_id");
 
-  const [{ data: items }, { data: catalogo }] = await Promise.all([
-    supabase
-      .from("items_mesa")
-      .select("id, nombre, monto_meta_centavos, cantidad, orden")
-      .eq("evento_id", evento.id)
-      .order("orden", { ascending: true }),
+  const [items, { data: catalogo }] = await Promise.all([
+    itemsDeMesa(supabase, evento.id),
     supabase
       .from("catalogo_items")
       .select("id, nombre, categoria, descripcion, precio_centavos, imagen_url")
       .order("categoria", { ascending: true }),
   ]);
 
-  const lista = items ?? [];
+  const lista = items;
   const total = lista.reduce((s, it) => s + it.monto_meta_centavos, 0);
 
   return (
