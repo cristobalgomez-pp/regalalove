@@ -100,7 +100,7 @@ export default function SelectorPaquete({ paquetes }: { paquetes: PaqueteVista[]
               key={i}
               style={{ display: "flex", justifyContent: "space-between", gap: "0.5rem", fontSize: "0.9rem" }}
             >
-              <span>{it.nombre}</span>
+              <span style={{ minWidth: 0 }}>{it.nombre}</span>
               <span className="muted" style={{ flexShrink: 0 }}>×{it.cantidad}</span>
             </li>
           ))}

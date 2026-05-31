@@ -130,12 +130,12 @@ export default async function PaginaEvento({
             const pct = Math.min(100, Math.floor((fondeado / it.monto_meta_centavos) * 100));
             const completado = fondeado >= it.monto_meta_centavos;
             return (
-              <div key={it.id} className="tarjeta" style={{ display: "flex", gap: "1rem", alignItems: "center", padding: "1rem 1.25rem" }}>
+              <div key={it.id} className="tarjeta fila-deseo" style={{ display: "flex", gap: "1rem", alignItems: "center", padding: "1rem 1.25rem" }}>
                 {it.imagen_url ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img src={it.imagen_url} alt={it.nombre} width={72} height={72} style={{ objectFit: "cover", borderRadius: 10, flexShrink: 0 }} />
                 ) : null}
-                <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ flex: 1, minWidth: 0, overflowWrap: "anywhere" }}>
                   <strong style={{ fontSize: "1.05rem" }}>
                     {it.nombre}
                     {it.cantidad > 1 ? <span className="muted"> × {it.cantidad}</span> : null}
