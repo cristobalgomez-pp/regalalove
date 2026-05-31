@@ -15,7 +15,7 @@ test("sin RESEND_API_KEY devuelve un enviador no-op que no lanza", async () => {
   const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
 
   await expect(
-    enviador.enviar({ destinatario: "a@b.com", plantilla: "bienvenida", datos: {} }),
+    enviador.enviar({ destinatario: "a@b.com", plantilla: "bienvenida", datos: { nombreFestejado: "Ana" } }),
   ).resolves.toBeUndefined();
   expect(warn).toHaveBeenCalled();
 

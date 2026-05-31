@@ -4,11 +4,32 @@ export type PlantillaCorreo =
   | "aviso_retiro_festejado"
   | "bienvenida";
 
-export interface CorreoPendiente {
-  destinatario: string;
-  plantilla: PlantillaCorreo;
-  datos: Record<string, unknown>;
-}
+/**
+ * Un correo listo para enviar. Los `datos` están tipados por plantilla (unión
+ * discriminada): olvidar o renombrar un campo es error de compilación, no un
+ * fallo en runtime al renderizar.
+ */
+export type CorreoPendiente =
+  | {
+      destinatario: string;
+      plantilla: "comprobante_invitado";
+      datos: { nombreInvitado: string; monto: number; itemNombre: string };
+    }
+  | {
+      destinatario: string;
+      plantilla: "aviso_aportacion_festejado";
+      datos: { nombreFestejado: string; nombreInvitado: string; monto: number; itemNombre: string };
+    }
+  | {
+      destinatario: string;
+      plantilla: "aviso_retiro_festejado";
+      datos: { nombreFestejado: string; monto: number };
+    }
+  | {
+      destinatario: string;
+      plantilla: "bienvenida";
+      datos: { nombreFestejado: string };
+    };
 
 export interface DatosAportacion {
   invitado: { nombre: string; correo: string; mensaje: string };

@@ -4,8 +4,16 @@ import { crearEnviadorFake } from "./enviador.fake";
 import type { CorreoPendiente } from "./correos";
 
 const correos: CorreoPendiente[] = [
-  { destinatario: "lucha@example.com", plantilla: "comprobante_invitado", datos: { monto: 50000 } },
-  { destinatario: "ana@example.com", plantilla: "aviso_aportacion_festejado", datos: { monto: 50000 } },
+  {
+    destinatario: "lucha@example.com",
+    plantilla: "comprobante_invitado",
+    datos: { nombreInvitado: "Tía Lucha", monto: 50000, itemNombre: "Vajilla" },
+  },
+  {
+    destinatario: "ana@example.com",
+    plantilla: "aviso_aportacion_festejado",
+    datos: { nombreFestejado: "Ana", nombreInvitado: "Tía Lucha", monto: 50000, itemNombre: "Vajilla" },
+  },
 ];
 
 test("enviarCorreos despacha cada correo pendiente por el puerto", async () => {
