@@ -8,6 +8,7 @@ import { calcularSaldoRetiro } from "./calculo";
 import { correoPorRetiro } from "@/notificaciones/correos";
 import { enviarCorreos } from "@/notificaciones/enviador";
 import { obtenerEnviador } from "@/notificaciones/enviador.factory";
+import { puedeRetirar } from "@/retiros/guarda";
 
 /** Guarda los datos KYC del festejado (nombre completo + CLABE). */
 export async function guardarKyc(slug: string, formData: FormData) {
@@ -36,7 +37,12 @@ export async function solicitarRetiro(slug: string, formData: FormData) {
   const { supabase, user, evento } = await cargarMesaDelFestejado<{
     id: string;
     festejado_id: string;
-  }>(slug, "id, festejado_id");
+    sospechoso: boolean;
+  }>(slug, "id, festejado_id, sospechoso");
+
+  if (!puedeRetirar(evento)) {
+    throw new Error("Esta mesa está en revisión; los retiros están temporalmente bloqueados.");
+  }
 
   const { data: kyc } = await supabase
     .from("kyc_festejado")

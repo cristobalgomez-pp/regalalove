@@ -1,9 +1,11 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
+import { esAdmin, obtenerAllowlistAdmin } from "@/admin/acceso";
 
 /**
- * Refresca la sesión de Supabase y protege /dashboard: si no hay usuario
- * autenticado, redirige a /login.
+ * Refresca la sesión de Supabase y protege /dashboard y /admin:
+ *   - /dashboard → redirige a /login si no hay sesión
+ *   - /admin     → redirige a /login sin sesión, a /dashboard si no es admin
  */
 export async function middleware(request: NextRequest) {
   let response = NextResponse.next({ request });
@@ -31,7 +33,22 @@ export async function middleware(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  if (!user && request.nextUrl.pathname.startsWith("/dashboard")) {
+  const ruta = request.nextUrl.pathname;
+
+  if (ruta.startsWith("/admin")) {
+    if (!user) {
+      const url = request.nextUrl.clone();
+      url.pathname = "/login";
+      return NextResponse.redirect(url);
+    }
+    if (!esAdmin(user.email, obtenerAllowlistAdmin())) {
+      const url = request.nextUrl.clone();
+      url.pathname = "/dashboard";
+      return NextResponse.redirect(url);
+    }
+  }
+
+  if (!user && ruta.startsWith("/dashboard")) {
     const url = request.nextUrl.clone();
     url.pathname = "/login";
     return NextResponse.redirect(url);
@@ -41,5 +58,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/dashboard/:path*"],
+  matcher: ["/dashboard/:path*", "/admin/:path*"],
 };

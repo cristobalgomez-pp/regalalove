@@ -27,7 +27,7 @@ pnpm dev                     # http://localhost:3000
 
 ### Variables de entorno
 
-Ver [`.env.example`](./.env.example). La marca y la URL base (`NOMBRE_MARCA`, `URL_BASE`) viven en configuración, no en el código.
+Ver [`.env.example`](./.env.example). La marca y la URL base (`NOMBRE_MARCA`, `URL_BASE`) viven en configuración, no en el código. `ADMIN_EMAILS` (correos separados por comas) define quién ve el panel interno `/admin`.
 
 ## Pruebas
 
