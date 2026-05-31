@@ -5,6 +5,7 @@ import {
   type DefinicionItem,
   type MetodoPago,
 } from "./ledger";
+import { entradaLedger } from "../aportaciones/proyecciones.js";
 
 export interface AportacionPersistida {
   itemId: string | null; // null = fondo general
@@ -24,11 +25,7 @@ export function reconstruirEstadoMesa(
   let estado = crearMesa(items);
 
   for (const a of aportaciones) {
-    estado = registrarAportacion(estado, {
-      destino: a.itemId ?? "general",
-      monto: a.monto,
-      metodoPago: a.metodoPago,
-    });
+    estado = registrarAportacion(estado, entradaLedger(a));
   }
 
   return estado;

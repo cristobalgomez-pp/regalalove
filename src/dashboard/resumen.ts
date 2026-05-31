@@ -4,13 +4,9 @@ import type { DefinicionItem } from "../ledger/ledger.js";
 import { calcularRetencion } from "../retencion/retencion.js";
 import type { ConfigRetencion } from "../retencion/retencion.js";
 import type { AportacionAsentada } from "../pagos/webhook.js";
+import { feedDe, type AportacionFeed } from "../aportaciones/proyecciones.js";
 
-export interface AportacionFeed {
-  nombre: string;
-  monto: number; // en centavos
-  itemId: string | null;
-  mensaje: string;
-}
+export type { AportacionFeed };
 
 export interface ResumenDashboard {
   saldoTotal: number; // en centavos
@@ -34,12 +30,7 @@ export function resumenDashboard(
 
   const aportaciones: AportacionFeed[] = [...asentadas]
     .sort((a, b) => b.fecha - a.fecha)
-    .map((a) => ({
-      nombre: a.nombre,
-      monto: a.monto,
-      itemId: a.itemId,
-      mensaje: a.mensaje,
-    }));
+    .map(feedDe);
 
   return {
     saldoTotal: saldoTotal(estado),
