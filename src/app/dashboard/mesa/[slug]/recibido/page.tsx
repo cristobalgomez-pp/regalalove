@@ -1,6 +1,5 @@
-import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
-import { crearClienteServidorAuth } from "@/lib/supabase/servidor-auth";
+import { cargarMesaDelFestejado } from "@/lib/mesa";
 import { obtenerConfigMonetizacion } from "@/config/obtenerConfigMonetizacion";
 import PanelEnVivo, { type AportacionVista } from "./PanelEnVivo";
 import type { MetodoPago } from "@/dominio/tipos";
@@ -11,20 +10,11 @@ export default async function RecibidoMesa({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const supabase = await crearClienteServidorAuth();
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) redirect("/login");
-
-  const { data: evento } = await supabase
-    .from("eventos")
-    .select("id, titulo, festejado_id")
-    .eq("slug", slug)
-    .maybeSingle();
-  if (!evento) notFound();
-  if (evento.festejado_id !== user.id) redirect("/dashboard");
+  const { supabase, evento } = await cargarMesaDelFestejado<{
+    id: string;
+    titulo: string;
+    festejado_id: string;
+  }>(slug, "id, titulo, festejado_id");
 
   const [{ data: items }, { data: aportaciones }, { data: retiros }, config] = await Promise.all([
     supabase.from("items_mesa").select("id, nombre").eq("evento_id", evento.id),

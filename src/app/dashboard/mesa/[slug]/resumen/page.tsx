@@ -1,6 +1,5 @@
-import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
-import { crearClienteServidorAuth } from "@/lib/supabase/servidor-auth";
+import { cargarMesaDelFestejado } from "@/lib/mesa";
 import CompartirMesa from "../../../CompartirMesa";
 
 const ETIQUETA_TIPO: Record<string, string> = {
@@ -20,21 +19,13 @@ export default async function ResumenMesa({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const supabase = await crearClienteServidorAuth();
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) redirect("/login");
-
-  const { data: evento } = await supabase
-    .from("eventos")
-    .select("id, titulo, tipo, festejado_id, codigo")
-    .eq("slug", slug)
-    .maybeSingle();
-
-  if (!evento) notFound();
-  if (evento.festejado_id !== user.id) redirect("/dashboard");
+  const { supabase, evento } = await cargarMesaDelFestejado<{
+    id: string;
+    titulo: string;
+    tipo: string;
+    festejado_id: string;
+    codigo: string | null;
+  }>(slug, "id, titulo, tipo, festejado_id, codigo");
 
   const { data: items } = await supabase
     .from("items_mesa")
