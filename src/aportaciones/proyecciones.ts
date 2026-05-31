@@ -1,6 +1,8 @@
 import type { Aportacion } from "../ledger/ledger";
 import type { AportacionPersistida } from "../ledger/reconstruir";
 import type { AportacionAsentada } from "../pagos/webhook";
+import type { MetodoPago } from "../dominio/tipos";
+import type { AportacionConfirmadaRow } from "../lib/datos-mesa";
 
 /**
  * Proyecciones del concepto "aportación" hacia las vistas que lo consumen.
@@ -33,5 +35,50 @@ export function entradaLedger(a: AportacionPersistida): Aportacion {
     destino: a.itemId ?? "general",
     monto: a.monto,
     metodoPago: a.metodoPago,
+  };
+}
+
+/** Fila confirmada de la BD → aportación asentada (lo que entiende el dominio).
+ * Única traducción: server (carga inicial) y cliente (realtime) la comparten. */
+export function filaAAsentada(row: AportacionConfirmadaRow): AportacionAsentada {
+  return {
+    cobroId: row.id,
+    itemId: row.item_id,
+    monto: row.monto_centavos,
+    metodoPago: row.metodo_pago as MetodoPago,
+    fecha: new Date(row.creado_en).getTime(),
+    nombre: row.nombre_invitado,
+    mensaje: row.mensaje ?? "",
+  };
+}
+
+/** Cómo se ve una aportación en el feed del panel en vivo del festejado.
+ * Enriquece la asentada con el nombre del ítem para mostrarlo. */
+export interface AportacionVista {
+  id: string;
+  nombre: string;
+  monto: number; // centavos
+  itemId: string | null;
+  itemNombre: string | null;
+  mensaje: string;
+  metodoPago: MetodoPago;
+  fecha: number; // epoch ms
+  nuevo?: boolean;
+}
+
+/** Aportación asentada + mapa id→nombre de ítems → vista del feed. */
+export function vistaDesde(
+  a: AportacionAsentada,
+  itemsMap: Record<string, string>,
+): AportacionVista {
+  return {
+    id: a.cobroId,
+    nombre: a.nombre,
+    monto: a.monto,
+    itemId: a.itemId,
+    itemNombre: a.itemId ? itemsMap[a.itemId] ?? "Un regalo" : null,
+    mensaje: a.mensaje,
+    metodoPago: a.metodoPago,
+    fecha: a.fecha,
   };
 }
