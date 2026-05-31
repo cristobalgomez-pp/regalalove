@@ -1,6 +1,6 @@
-import { calcularComision } from "../fees/fees.js";
-import type { PlanEvento } from "../fees/fees.js";
-import type { ConfigMonetizacion } from "../config/monetizacion.js";
+import { calcularComision } from "../fees/fees";
+import type { PlanEvento } from "../fees/fees";
+import type { ConfigMonetizacion } from "../config/monetizacion";
 
 export interface OpcionesCheckout {
   plan: PlanEvento;

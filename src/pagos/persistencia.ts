@@ -1,5 +1,5 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
-import type { MetodoPago } from "../dominio/tipos.js";
+import type { MetodoPago } from "../dominio/tipos";
 
 /**
  * Datos que el webhook persiste al confirmar un cobro. Es agnóstico al

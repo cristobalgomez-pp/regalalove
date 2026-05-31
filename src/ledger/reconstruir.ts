@@ -5,7 +5,7 @@ import {
   type DefinicionItem,
   type MetodoPago,
 } from "./ledger";
-import { entradaLedger } from "../aportaciones/proyecciones.js";
+import { entradaLedger } from "../aportaciones/proyecciones";
 
 export interface AportacionPersistida {
   itemId: string | null; // null = fondo general

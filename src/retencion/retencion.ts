@@ -1,4 +1,4 @@
-import type { MetodoPago } from "../dominio/tipos.js";
+import type { MetodoPago } from "../dominio/tipos";
 
 export type { MetodoPago };
 

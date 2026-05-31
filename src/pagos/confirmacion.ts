@@ -1,6 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
-import type { EventoPago } from "./webhook.js";
-import { asentarAportacion, revertirAportacion } from "./persistencia.js";
+import type { EventoPago } from "./webhook";
+import { asentarAportacion, revertirAportacion } from "./persistencia";
 
 /**
  * Contexto del checkout que el evento de la pasarela no trae (lo calcula la

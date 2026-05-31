@@ -1,4 +1,4 @@
-import type { MetodoPago } from "../dominio/tipos.js";
+import type { MetodoPago } from "../dominio/tipos";
 
 /** Datos del invitado en guest checkout: sin cuenta, solo nombre y mensaje. */
 export interface InvitadoCheckout {

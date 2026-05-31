@@ -1,6 +1,6 @@
-import type { Aportacion } from "../ledger/ledger.js";
-import type { AportacionPersistida } from "../ledger/reconstruir.js";
-import type { AportacionAsentada } from "../pagos/webhook.js";
+import type { Aportacion } from "../ledger/ledger";
+import type { AportacionPersistida } from "../ledger/reconstruir";
+import type { AportacionAsentada } from "../pagos/webhook";
 
 /**
  * Proyecciones del concepto "aportación" hacia las vistas que lo consumen.

@@ -1,5 +1,5 @@
 import { randomUUID } from "node:crypto";
-import type { Cobro, ParamsCobro, PasarelaPago } from "./pasarela.js";
+import type { Cobro, ParamsCobro, PasarelaPago } from "./pasarela";
 
 /** Pasarela simulada para pruebas: implementa el puerto y registra los cobros
  * recibidos, sin tocar la red. El adaptador real contra EcartPay sandbox
