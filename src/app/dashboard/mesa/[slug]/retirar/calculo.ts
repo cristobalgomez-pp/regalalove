@@ -1,6 +1,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { calcularRetencion } from "@/retencion/retencion";
 import { obtenerConfigMonetizacion } from "@/config/obtenerConfigMonetizacion";
+import { aportacionesConfirmadas } from "@/lib/datos-mesa";
 import type { MetodoPago } from "@/dominio/tipos";
 
 export interface SaldoRetiro {
@@ -15,18 +16,14 @@ export async function calcularSaldoRetiro(
   supabase: SupabaseClient,
   eventoId: string,
 ): Promise<SaldoRetiro> {
-  const [{ data: aps }, { data: rets }, config] = await Promise.all([
-    supabase
-      .from("aportaciones")
-      .select("monto_centavos, metodo_pago, creado_en")
-      .eq("evento_id", eventoId)
-      .eq("estado", "confirmada"),
+  const [aps, { data: rets }, config] = await Promise.all([
+    aportacionesConfirmadas(supabase, eventoId),
     supabase.from("retiros").select("monto_centavos").eq("evento_id", eventoId),
     obtenerConfigMonetizacion(),
   ]);
 
   const { retirable } = calcularRetencion(
-    (aps ?? []).map((a) => ({
+    aps.map((a) => ({
       monto: a.monto_centavos,
       metodoPago: a.metodo_pago as MetodoPago,
       fecha: new Date(a.creado_en).getTime(),

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { cargarMesaDelFestejado } from "@/lib/mesa";
+import { itemsDeMesa, aportacionesConfirmadas } from "@/lib/datos-mesa";
 import { obtenerConfigMonetizacion } from "@/config/obtenerConfigMonetizacion";
 import PanelEnVivo, { type AportacionVista } from "./PanelEnVivo";
 import type { MetodoPago } from "@/dominio/tipos";
@@ -16,14 +17,9 @@ export default async function RecibidoMesa({
     festejado_id: string;
   }>(slug, "id, titulo, festejado_id");
 
-  const [{ data: items }, { data: aportaciones }, { data: retiros }, config] = await Promise.all([
-    supabase.from("items_mesa").select("id, nombre").eq("evento_id", evento.id),
-    supabase
-      .from("aportaciones")
-      .select("id, nombre_invitado, monto_centavos, item_id, mensaje, metodo_pago, creado_en")
-      .eq("evento_id", evento.id)
-      .eq("estado", "confirmada")
-      .order("creado_en", { ascending: false }),
+  const [items, aportaciones, { data: retiros }, config] = await Promise.all([
+    itemsDeMesa(supabase, evento.id),
+    aportacionesConfirmadas(supabase, evento.id),
     supabase.from("retiros").select("monto_centavos").eq("evento_id", evento.id),
     obtenerConfigMonetizacion(),
   ]);
@@ -31,9 +27,9 @@ export default async function RecibidoMesa({
   const yaRetirado = (retiros ?? []).reduce((s, r) => s + r.monto_centavos, 0);
 
   const itemsMap: Record<string, string> = {};
-  for (const it of items ?? []) itemsMap[it.id] = it.nombre;
+  for (const it of items) itemsMap[it.id] = it.nombre;
 
-  const inicial: AportacionVista[] = (aportaciones ?? []).map((a) => ({
+  const inicial: AportacionVista[] = aportaciones.map((a) => ({
     id: a.id,
     nombre: a.nombre_invitado,
     monto: a.monto_centavos,

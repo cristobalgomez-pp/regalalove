@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { cargarMesaDelFestejado } from "@/lib/mesa";
+import { itemsDeMesa } from "@/lib/datos-mesa";
 import CompartirMesa from "../../../CompartirMesa";
 
 const ETIQUETA_TIPO: Record<string, string> = {
@@ -27,13 +28,8 @@ export default async function ResumenMesa({
     codigo: string | null;
   }>(slug, "id, titulo, tipo, festejado_id, codigo");
 
-  const { data: items } = await supabase
-    .from("items_mesa")
-    .select("id, nombre, monto_meta_centavos, cantidad, orden")
-    .eq("evento_id", evento.id)
-    .order("orden", { ascending: true });
-
-  const lista = items ?? [];
+  const items = await itemsDeMesa(supabase, evento.id);
+  const lista = items;
   const total = lista.reduce((s, it) => s + it.monto_meta_centavos, 0);
 
   return (
