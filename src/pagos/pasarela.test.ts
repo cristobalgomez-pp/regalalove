@@ -23,3 +23,21 @@ test("crearCobro genera un cobro guest capturando nombre y mensaje sin cuenta", 
     invitado: { nombre: "Tía Lucha", mensaje: "¡Felicidades!" },
   });
 });
+
+test("cada cobro recibe un cobroId único, incluso entre pasarelas distintas", async () => {
+  // En producción se crea una pasarela nueva por request. El cobroId es la
+  // clave de idempotencia, así que dos cobros distintos NO deben colisionar
+  // (si colisionaran, asentar el segundo se deduplicaría contra el primero).
+  const params = {
+    mesaId: "mesa_abc",
+    itemId: null,
+    monto: 30000,
+    metodoPago: "tarjeta" as const,
+    invitado: { nombre: "Ana", mensaje: "" },
+  };
+
+  const cobroA = await crearEcartPayFake().crearCobro(params);
+  const cobroB = await crearEcartPayFake().crearCobro(params);
+
+  expect(cobroA.cobroId).not.toBe(cobroB.cobroId);
+});
