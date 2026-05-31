@@ -1,0 +1,47 @@
+name: CI
+
+# Gate de calidad: corre tipos + tests + build (Turbopack) en cada PR a main
+# y en los push a main. El `build` caza errores que tsc/vitest no ven (p. ej.
+# imports relativos con .js que Turbopack no resuelve).
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+# Cancela corridas viejas del mismo PR/rama si llega un push nuevo.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verificar:
+    name: Tipos / Tests / Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Instalar pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Instalar Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Instalar dependencias
+        run: pnpm install --frozen-lockfile
+
+      - name: Tipos (tsc)
+        run: pnpm exec tsc --noEmit
+
+      - name: Tests (vitest)
+        run: pnpm test
+
+      - name: Build (next / turbopack)
+        run: pnpm build
