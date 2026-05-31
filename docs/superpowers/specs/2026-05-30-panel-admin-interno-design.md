@@ -118,8 +118,8 @@ checkout/retiro, el cambio se refleja de inmediato.
   (rechaza % negativos, no-numéricos, días no-enteros) y serializa a filas
   `{ clave, valor }` para upsert. Pesos→centavos vive aquí. Es el inverso de
   `interpretarConfigMonetizacion`.
-- `src/retiros/guarda.ts` (o junto al cálculo de retiro) — `puedeRetirar(evento)`
-  pura: `false` si `evento.sospechoso`.
+- `src/retiros/guarda.ts` — `puedeRetirar(evento)` pura: `false` si
+  `evento.sospechoso`.
 
 Las pages y `acciones.ts` de `/admin` son capas delgadas que orquestan estos
 módulos con el cliente `service_role`.
@@ -144,7 +144,10 @@ En `solicitarRetiro` (`src/app/dashboard/mesa/[slug]/retirar/acciones.ts`):
 
 ## Pruebas
 
-Módulos profundos y guardas puras (donde un error cuesta dinero o seguridad):
+La implementación sigue **TDD** (skill `test-driven-development`): por cada
+módulo se escribe primero la prueba que falla, luego el código mínimo que la
+hace pasar. Módulos profundos y guardas puras (donde un error cuesta dinero o
+seguridad):
 
 1. **`esAdmin`** — correo en lista (case-insensitive, con espacios), fuera de
    lista, allowlist vacía, email nulo, comas colgantes.
