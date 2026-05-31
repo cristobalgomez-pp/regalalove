@@ -37,6 +37,10 @@ body {
   font-family: var(--fuente, system-ui, -apple-system, sans-serif);
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
+  /* Red de seguridad: parte tokens largos sin espacios (correos, URLs,
+     títulos pegados) en vez de empujar el ancho y crear scroll lateral.
+     break-word no afecta el tamaño intrínseco, así que no encoge botones. */
+  overflow-wrap: break-word;
 }
 
 h1,
@@ -248,6 +252,13 @@ select.input:focus {
   gap: 1.75rem;
   align-items: start;
 }
+/* Las pistas de grid traen min-width:auto, así que un contenido ancho
+   (un nombre largo o sin espacios) estira la columna y rompe el viewport.
+   min-width:0 deja que las columnas se encojan. */
+.grid-panel > *,
+.grid-mesa > * {
+  min-width: 0;
+}
 .mesa-aside {
   position: sticky;
   top: 1.5rem;
@@ -273,6 +284,14 @@ select.input:focus {
 }
 
 @media (max-width: 640px) {
+  /* iOS Safari hace auto-zoom (y no regresa) al enfocar un campo con
+     font-size < 16px. Subimos los controles a 16px solo en móvil. */
+  .input,
+  select.input,
+  textarea.input {
+    font-size: 16px;
+  }
+
   /* Layouts apilan en una columna */
   .grid-panel,
   .grid-mesa {
@@ -311,6 +330,16 @@ select.input:focus {
     flex-basis: 100%;
     flex-wrap: wrap;
     justify-content: space-between;
+  }
+
+  /* Fila de deseos (página pública): imagen + texto arriba, botón abajo
+     a todo el ancho para que no quede apretado en pantallas chicas. */
+  .fila-deseo {
+    flex-wrap: wrap;
+  }
+  .fila-deseo > .btn {
+    flex: 1 0 100%;
+    margin-top: 0.25rem;
   }
 
   /* Tap targets más cómodos */

@@ -147,7 +147,7 @@ export default async function GestionMesa({
                       }}
                     >
                       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "start", gap: "0.5rem" }}>
-                        <strong style={{ fontSize: "0.95rem" }}>{it.nombre}</strong>
+                        <strong style={{ fontSize: "0.95rem", minWidth: 0, overflowWrap: "anywhere" }}>{it.nombre}</strong>
                         <form action={eliminarItem.bind(null, it.id, slug)}>
                           <button type="submit" className="btn btn-fantasma" style={{ padding: "0.1rem 0.4rem" }} title="Quitar">
                             ✕

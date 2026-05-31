@@ -92,7 +92,7 @@ export default function CatalogoSelector({
                 <div style={{ width: 64, height: 64, borderRadius: 8, background: "var(--surface)", flexShrink: 0 }} />
               )}
 
-              <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ flex: 1, minWidth: 0, overflowWrap: "anywhere" }}>
                 <div style={{ fontSize: "0.7rem", color: "var(--accent)", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.05em" }}>
                   {item.categoria}
                 </div>
