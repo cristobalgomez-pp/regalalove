@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { crearClienteServidorAuth } from "@/lib/supabase/servidor-auth";
+import { cargarMesaDelFestejado } from "@/lib/mesa";
 import { calcularSaldoRetiro } from "./calculo";
 import { correoPorRetiro } from "@/notificaciones/correos";
 import { enviarCorreos } from "@/notificaciones/enviador";
@@ -32,19 +33,10 @@ export async function guardarKyc(slug: string, formData: FormData) {
 /** Solicita un retiro de la mesa. Dispersión simulada (EcartPay real pendiente);
  * se asienta como 'completado' tras validar contra lo disponible. */
 export async function solicitarRetiro(slug: string, formData: FormData) {
-  const supabase = await crearClienteServidorAuth();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) redirect("/login");
-
-  const { data: evento } = await supabase
-    .from("eventos")
-    .select("id, festejado_id")
-    .eq("slug", slug)
-    .maybeSingle();
-  if (!evento) throw new Error("Mesa no encontrada");
-  if (evento.festejado_id !== user.id) redirect("/dashboard");
+  const { supabase, user, evento } = await cargarMesaDelFestejado<{
+    id: string;
+    festejado_id: string;
+  }>(slug, "id, festejado_id");
 
   const { data: kyc } = await supabase
     .from("kyc_festejado")

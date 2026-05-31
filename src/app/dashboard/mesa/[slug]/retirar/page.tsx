@@ -1,6 +1,5 @@
-import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
-import { crearClienteServidorAuth } from "@/lib/supabase/servidor-auth";
+import { cargarMesaDelFestejado } from "@/lib/mesa";
 import { calcularSaldoRetiro } from "./calculo";
 import { guardarKyc, solicitarRetiro } from "./acciones";
 
@@ -18,20 +17,11 @@ export default async function RetirarMesa({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const supabase = await crearClienteServidorAuth();
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) redirect("/login");
-
-  const { data: evento } = await supabase
-    .from("eventos")
-    .select("id, titulo, festejado_id")
-    .eq("slug", slug)
-    .maybeSingle();
-  if (!evento) notFound();
-  if (evento.festejado_id !== user.id) redirect("/dashboard");
+  const { supabase, user, evento } = await cargarMesaDelFestejado<{
+    id: string;
+    titulo: string;
+    festejado_id: string;
+  }>(slug, "id, titulo, festejado_id");
 
   const [{ data: kyc }, { data: retiros }, saldo] = await Promise.all([
     supabase.from("kyc_festejado").select("nombre_completo, clabe").eq("festejado_id", user.id).maybeSingle(),

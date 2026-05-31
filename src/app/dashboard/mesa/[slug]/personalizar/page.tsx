@@ -1,6 +1,5 @@
-import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
-import { crearClienteServidorAuth } from "@/lib/supabase/servidor-auth";
+import { cargarMesaDelFestejado } from "@/lib/mesa";
 import FormularioPersonalizar from "./FormularioPersonalizar";
 
 export default async function PersonalizarMesa({
@@ -9,20 +8,13 @@ export default async function PersonalizarMesa({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const supabase = await crearClienteServidorAuth();
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) redirect("/login");
-
-  const { data: evento } = await supabase
-    .from("eventos")
-    .select("titulo, festejado_id, mensaje_bienvenida, fecha_evento, portada_url")
-    .eq("slug", slug)
-    .maybeSingle();
-  if (!evento) notFound();
-  if (evento.festejado_id !== user.id) redirect("/dashboard");
+  const { evento } = await cargarMesaDelFestejado<{
+    titulo: string;
+    festejado_id: string;
+    mensaje_bienvenida: string | null;
+    fecha_evento: string | null;
+    portada_url: string | null;
+  }>(slug, "titulo, festejado_id, mensaje_bienvenida, fecha_evento, portada_url");
 
   return (
     <main className="contenedor" style={{ paddingTop: "2rem", paddingBottom: "4rem", maxWidth: 560 }}>
