@@ -6,7 +6,8 @@ import { crearClienteServidor } from "@/lib/supabase/server";
 import { obtenerConfigMonetizacion } from "@/config/obtenerConfigMonetizacion";
 import { calcularComision } from "@/fees/fees";
 import { crearEcartPayFake } from "@/pagos/ecartpay.fake";
-import { asentarAportacion } from "@/pagos/persistencia";
+import { aplicarEventoPagoPersistido } from "@/pagos/confirmacion";
+import type { EventoPago } from "@/pagos/webhook";
 import type { MetodoPago } from "@/dominio/tipos";
 import { correosPorAportacion } from "@/notificaciones/correos";
 import { enviarCorreos } from "@/notificaciones/enviador";
@@ -62,18 +63,21 @@ export async function procesarAportacion(slug: string, formData: FormData) {
     invitado: { nombre, mensaje },
   });
 
-  // Simulamos la confirmación del pago: asentamos la aportación. El cobroId de
-  // la pasarela es la clave de idempotencia (único por cobro): reasentarlo no
-  // duplica, gracias al upsert onConflict de persistencia.
-  await asentarAportacion(supabase, {
-    eventoId: evento.id,
-    itemId,
+  // Confirmación simulada del cobro. Se asienta por el seam único de pagos
+  // (evento de pago → aportaciones), el mismo camino que usará el webhook real
+  // de EcartPay. El cobroId es la clave de idempotencia.
+  const eventoPago: EventoPago = {
+    tipo: "pago.confirmado",
     cobroId: cobro.cobroId,
+    itemId,
     monto: montoCentavos,
     metodoPago,
-    nombreInvitado: nombre,
+    fecha: Date.now(),
+    invitado: { nombre, mensaje },
+  };
+  await aplicarEventoPagoPersistido(supabase, eventoPago, {
+    eventoId: evento.id,
     correoInvitado: correo,
-    mensaje,
     absorbeComision: absorbe,
     comisionCentavos: comision,
   });
