@@ -82,3 +82,28 @@ export function vistaDesde(
     fecha: a.fecha,
   };
 }
+
+/** Vista del feed → aportación asentada (inversa de `vistaDesde` en los campos
+ * de dominio). La usa el panel en vivo para recomputar el saldo en el cliente. */
+export function asentadaDesde(v: AportacionVista): AportacionAsentada {
+  return {
+    cobroId: v.id,
+    itemId: v.itemId,
+    monto: v.monto,
+    metodoPago: v.metodoPago,
+    fecha: v.fecha,
+    nombre: v.nombre,
+    mensaje: v.mensaje,
+  };
+}
+
+/** Reasigna al fondo general las aportaciones cuyo ítem ya no existe: mismo
+ * saldo total, sin romper el replay del Ledger. No muta la entrada. */
+export function redirigirItemsDesconocidos(
+  asentadas: AportacionAsentada[],
+  idsConocidos: Set<string>,
+): AportacionAsentada[] {
+  return asentadas.map((a) =>
+    a.itemId && !idsConocidos.has(a.itemId) ? { ...a, itemId: null } : a,
+  );
+}

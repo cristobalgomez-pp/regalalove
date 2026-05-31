@@ -1,5 +1,5 @@
 import { resumenDashboard, type ResumenDashboard } from "../dashboard/resumen";
-import { filaAAsentada } from "../aportaciones/proyecciones";
+import { filaAAsentada, redirigirItemsDesconocidos } from "../aportaciones/proyecciones";
 import type { ConfigRetencion } from "../retencion/retencion";
 import type { ItemMesaRow, AportacionConfirmadaRow } from "../lib/datos-mesa";
 import type { DefinicionItem } from "../ledger/ledger";
@@ -30,9 +30,7 @@ export function componerEstadoMesa(
   }));
   const ids = new Set(definiciones.map((d) => d.id));
 
-  const asentadas = apsRows
-    .map(filaAAsentada)
-    .map((a) => (a.itemId && !ids.has(a.itemId) ? { ...a, itemId: null } : a));
+  const asentadas = redirigirItemsDesconocidos(apsRows.map(filaAAsentada), ids);
 
   const itemsMap: Record<string, string> = {};
   for (const it of itemsRows) itemsMap[it.id] = it.nombre;

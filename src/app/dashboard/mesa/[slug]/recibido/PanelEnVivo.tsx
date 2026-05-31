@@ -3,10 +3,15 @@
 import { useEffect, useMemo, useState } from "react";
 import { crearClienteNavegador } from "@/lib/supabase/navegador";
 import { resumenDashboard } from "@/dashboard/resumen";
-import { filaAAsentada, vistaDesde, type AportacionVista } from "@/aportaciones/proyecciones";
+import {
+  filaAAsentada,
+  vistaDesde,
+  asentadaDesde,
+  redirigirItemsDesconocidos,
+  type AportacionVista,
+} from "@/aportaciones/proyecciones";
 import type { AportacionConfirmadaRow } from "@/lib/datos-mesa";
 import type { DefinicionItem } from "@/ledger/ledger";
-import type { AportacionAsentada } from "@/pagos/webhook";
 
 function pesos(centavos: number): string {
   return (centavos / 100).toLocaleString("es-MX", { style: "currency", currency: "MXN" });
@@ -72,16 +77,8 @@ export default function PanelEnVivo({
   // (resumenDashboard): el número en vivo no puede divergir del de una recarga.
   const { saldoTotal, retirable, retenido } = useMemo(() => {
     const idsConocidos = new Set(items.map((i) => i.id));
-    const asentadas: AportacionAsentada[] = lista.map((a) => ({
-      // un ítem borrado se cuenta como fondo general: mismo total, sin romper el replay
-      itemId: a.itemId && idsConocidos.has(a.itemId) ? a.itemId : null,
-      monto: a.monto,
-      metodoPago: a.metodoPago,
-      fecha: a.fecha,
-      cobroId: a.id,
-      nombre: a.nombre,
-      mensaje: a.mensaje,
-    }));
+    // misma proyección y mismo guard "ítem borrado → fondo general" que el servidor
+    const asentadas = redirigirItemsDesconocidos(lista.map(asentadaDesde), idsConocidos);
     const r = resumenDashboard(items, asentadas, Date.now(), { ventanaRetencionDias });
     return {
       saldoTotal: r.saldoTotal,
