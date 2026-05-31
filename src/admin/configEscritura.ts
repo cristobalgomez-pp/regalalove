@@ -21,7 +21,7 @@ function exigirNoNegativo(clave: string, n: number): number {
 export function aFilasConfig(entrada: EntradaConfigMonetizacion): FilaConfig[] {
   exigirNoNegativo("comision_base_pct", entrada.comisionBasePct);
   exigirNoNegativo("comision_premium_pct", entrada.comisionPremiumPct);
-  exigirNoNegativo("precio_premium_centavos", entrada.precioPremiumPesos);
+  exigirNoNegativo("precio_premium_pesos", entrada.precioPremiumPesos);
   if (!Number.isInteger(entrada.ventanaRetencionDias) || entrada.ventanaRetencionDias < 0) {
     throw new Error('Valor inválido para "ventana_retencion_dias": debe ser un entero ≥ 0');
   }
